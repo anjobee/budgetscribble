@@ -23,7 +23,7 @@ const TransactionRecords = ({ data }) => {
   const dispatch = useDispatch()
 
   const transactionRecords = useSelector((state) => state.transactionRecords)
-  const { success } = transactionRecords
+  const { loading, success, list } = transactionRecords
 
   const updateHandler = () => {
     dispatch(
@@ -105,20 +105,20 @@ const TransactionRecords = ({ data }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      <Table striped hover responsive>
-        <thead>
-          <tr className='table-dark'>
-            <th scope='col'>DATE</th>
-            <th scope='col'>CATEGORY</th>
-            <th scope='col'>TYPE</th>
-            <th scope='col'>TRANSACTION NAME</th>
-            <th scope='col'>TOTAL AMOUNT</th>
-            <th scope='col'>ACTIONS</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data &&
-            data.map((transaction, index) => (
+      {data && (
+        <Table striped hover responsive>
+          <thead>
+            <tr className='table-dark'>
+              <th scope='col'>DATE</th>
+              <th scope='col'>CATEGORY</th>
+              <th scope='col'>TYPE</th>
+              <th scope='col'>TRANSACTION NAME</th>
+              <th scope='col'>TOTAL AMOUNT</th>
+              <th scope='col'>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((transaction, index) => (
               <tr
                 key={index + 1}
                 className={
@@ -180,8 +180,9 @@ const TransactionRecords = ({ data }) => {
                 </td>
               </tr>
             ))}
-        </tbody>
-      </Table>
+          </tbody>
+        </Table>
+      )}
     </>
   )
 }
