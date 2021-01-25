@@ -10,13 +10,13 @@ import Loader from '../components/Loader'
 import Meta from '../components/Meta'
 import {
   getCategoryList,
-  getTotalCategoryList
+  getTotalCategoryList,
+  deleteCategory
 } from '../actions/categoryActions'
 import {
   getTransactionRecords,
   getTransactionTrend,
-  addTransaction,
-  deleteTransaction
+  addTransaction
 } from '../actions/transactionActions'
 import CategoryListPie from '../components/CategoryListPie'
 import PieChart from '../components/PieChart'
@@ -39,7 +39,13 @@ const HomeScreen = ({ history }) => {
 
   // TRANSACTIONS QUERY SECTION-------------------------------------------
   const categoryList = useSelector((state) => state.categoryList)
-  const { loading, categories, total, error } = categoryList
+  const {
+    loading,
+    categories,
+    success: successCategoryList,
+    total,
+    error
+  } = categoryList
 
   const categoryListTotal = useSelector((state) => state.categoryListTotal)
   const {
@@ -72,40 +78,67 @@ const HomeScreen = ({ history }) => {
   //TABLE PAGINATION
   const [totalItems, setTotalItems] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
-  const ITEMS_PER_PAGE = 5
+  const itemsPerRecord = 13
+
+  const [totalItemsCategory, setTotalItemsCategory] = useState(0)
+  const [currentPageCategory, setCurrentPageCategory] = useState(1)
+  const itemsPerCategory = 5
 
   //TABLE FILTER
   const filterQuery = (filter) => {
-    return transactions.filter(
-      (x) =>
-        x.categoryName.toUpperCase().indexOf(filter.toUpperCase()) > -1 ||
-        x.transactionList.transactionName
-          .toUpperCase()
-          .indexOf(filter.toUpperCase()) > -1 ||
-        x.transactionList.itemType.toUpperCase().indexOf(filter.toUpperCase()) >
-          -1 ||
-        x.transactionList.timestamp.slice(0, 10).indexOf(filter.toUpperCase()) >
-          -1 ||
-        JSON.stringify(x.transactionList.transactionAmount).indexOf(filter) > -1
+    return (
+      transactions &&
+      transactions.filter(
+        (x) =>
+          x.categoryName.toUpperCase().indexOf(filter.toUpperCase()) > -1 ||
+          x.transactionList.transactionName
+            .toUpperCase()
+            .indexOf(filter.toUpperCase()) > -1 ||
+          x.transactionList.itemType
+            .toUpperCase()
+            .indexOf(filter.toUpperCase()) > -1 ||
+          x.transactionList.timestamp
+            .slice(0, 10)
+            .indexOf(filter.toUpperCase()) > -1 ||
+          JSON.stringify(x.transactionList.transactionAmount).indexOf(filter) >
+            -1
+      )
     )
   }
 
   const recordData = useMemo(() => {
+    if (loadingTotal) return
     let computedRecords = filterQuery(filter)
 
     setTotalItems(computedRecords.length)
 
     return computedRecords.slice(
-      (currentPage - 1) * ITEMS_PER_PAGE,
-      (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
+      (currentPage - 1) * itemsPerRecord,
+      (currentPage - 1) * itemsPerRecord + itemsPerRecord
     )
   }, [filter, currentPage, successTransactionRecords])
+
+  const categoryData = useMemo(() => {
+    if (loading) return
+    let computedRecords = categories
+
+    setTotalItemsCategory(computedRecords.length)
+
+    return computedRecords.slice(
+      (currentPageCategory - 1) * itemsPerCategory,
+      (currentPageCategory - 1) * itemsPerCategory + itemsPerCategory
+    )
+  }, [currentPageCategory, successCategoryList])
 
   useEffect(() => {
     setCurrentPage(1)
   }, [filter])
 
-  //TRANSASCTIONS ADD/UPDATE/DELETE-------------------------------------------
+  //CATEGORY/TRANSASCTIONS ADD/UPDATE/DELETE-------------------------------------------
+
+  const categoryDelete = useSelector((state) => state.categoryDelete)
+  const { success: successCategoryDelete } = categoryDelete
+
   const transactionAdd = useSelector((state) => state.transactionAdd)
   const { success: successAdd } = transactionAdd
 
@@ -123,7 +156,7 @@ const HomeScreen = ({ history }) => {
     dispatch(getTotalCategoryList())
     dispatch(getTransactionTrend())
     dispatch(getTransactionRecords())
-  }, [dispatch, success, successAdd, successDelete])
+  }, [dispatch, success, successAdd, successDelete, successCategoryDelete])
 
   //SUBMIT HANDLERS EDIT/ADD/DELETE-------------------------------------------
 
@@ -142,9 +175,9 @@ const HomeScreen = ({ history }) => {
     setTransactionAmount(0)
   }
 
-  const deleteHandler = (categoryId, transactionId) => {
+  const deleteHandler = (categoryId) => {
     if (window.confirm('Are you sure?')) {
-      dispatch(deleteTransaction(categoryId, transactionId))
+      dispatch(deleteCategory(categoryId))
     }
   }
 
@@ -185,7 +218,7 @@ const HomeScreen = ({ history }) => {
       <Row className='justify-content-md-center'>
         <Col md={8}>
           {' '}
-          <div className='jumbotron bg-jumbotron mt-5 justify-con'>
+          <div className='jumbotron bg-jumbotron top-margin justify-con'>
             <h1 className='display-3'>Hello, {userInfo.firstName}!</h1>
             <p className='lead ml-3'>
               <i className='fas fa-money-bill'></i>&#8369;{total}
@@ -240,19 +273,20 @@ const HomeScreen = ({ history }) => {
                             onChange={(e) => setCategoryName(e.target.value)}
                           >
                             <option>Choose...</option>
-                            {categories.map((category, index) => (
-                              <option
-                                className={
-                                  category.transactionType === 'income'
-                                    ? 'text-success'
-                                    : 'text-danger'
-                                }
-                                key={index + 100}
-                                value={category.categoryName}
-                              >
-                                {category.categoryName}
-                              </option>
-                            ))}
+                            {!loading &&
+                              categories.map((category, index) => (
+                                <option
+                                  className={
+                                    category.transactionType === 'income'
+                                      ? 'text-success'
+                                      : 'text-danger'
+                                  }
+                                  key={index + 100}
+                                  value={category.categoryName}
+                                >
+                                  {category.categoryName}
+                                </option>
+                              ))}
                           </Form.Control>
                         </Form.Group>
 
@@ -331,6 +365,12 @@ const HomeScreen = ({ history }) => {
                     CATEGORY LIST
                   </Card.Header>
                   <Card.Body>
+                    <Paginate
+                      total={totalItemsCategory}
+                      itemsPerPage={itemsPerCategory}
+                      currentPage={currentPageCategory}
+                      onPageChange={(page) => setCurrentPageCategory(page)}
+                    />
                     <Table striped hover responsive>
                       <thead>
                         <tr className='table-dark'>
@@ -345,45 +385,39 @@ const HomeScreen = ({ history }) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {categories.map((category, index) => (
-                          <tr
-                            key={index + 1}
-                            className={
-                              category.transactionType === 'income'
-                                ? 'table-success'
-                                : 'table-danger'
-                            }
-                          >
-                            <th scope='row'>{index + 1}</th>
-                            <td>{category.categoryName}</td>
-                            <td>{category.transactionType.toUpperCase()}</td>
-                            <td className='text-center'>
-                              {category.transactionCount}
-                            </td>
-                            <td>
-                              {category.transactionType === 'expenses'
-                                ? `-₱${category.totalTransactionAmount.toLocaleString()}`
-                                : `₱${category.totalTransactionAmount.toLocaleString()}`}
-                            </td>
-                            <td>
-                              <Button
-                                variant='danger'
-                                className='btn-sm'
-                                onClick={() => deleteHandler(category._id)}
-                                key={`button-${index + 1}`}
-                              >
-                                <i className='fas fa-trash'></i>
-                              </Button>
-                            </td>
-                          </tr>
-                        ))}
-                        <tr className='table-info'>
-                          <td colSpan='4' className='text-right'>
-                            TOTAL CASH:
-                          </td>
-                          <td>&#8369;{total}</td>
-                          <td>{''}</td>
-                        </tr>
+                        {!loading &&
+                          categoryData.map((category, index) => (
+                            <tr
+                              key={index + 1}
+                              className={
+                                category.transactionType === 'income'
+                                  ? 'table-success'
+                                  : 'table-danger'
+                              }
+                            >
+                              <th scope='row'>{index + 1}</th>
+                              <td>{category.categoryName}</td>
+                              <td>{category.transactionType.toUpperCase()}</td>
+                              <td className='text-center'>
+                                {category.transactionCount}
+                              </td>
+                              <td>
+                                {category.transactionType === 'expenses'
+                                  ? `-₱${category.totalTransactionAmount.toLocaleString()}`
+                                  : `₱${category.totalTransactionAmount.toLocaleString()}`}
+                              </td>
+                              <td>
+                                <Button
+                                  variant='danger'
+                                  className='btn-sm'
+                                  onClick={() => deleteHandler(category._id)}
+                                  key={`button-${index + 1}`}
+                                >
+                                  <i className='fas fa-trash'></i>
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
                       </tbody>
                     </Table>
                   </Card.Body>
@@ -405,9 +439,10 @@ const HomeScreen = ({ history }) => {
                   </Card.Header>
                   <Card.Body>
                     <Row>
-                      <Col>
-                        <Form.Group controlId='searchKeyword'>
-                          <Form.Label>Search</Form.Label>
+                      <Col className='d-flex flex-row'>
+                        {' '}
+                        <Form.Group>
+                          {' '}
                           <Form.Control
                             type='text'
                             sm={5}
@@ -417,10 +452,11 @@ const HomeScreen = ({ history }) => {
                           ></Form.Control>
                         </Form.Group>
                       </Col>
-                      <Col>
+                      <Col className='d-flex flex-row-reverse'>
+                        {' '}
                         <Paginate
                           total={totalItems}
-                          itemsPerPage={ITEMS_PER_PAGE}
+                          itemsPerPage={itemsPerRecord}
                           currentPage={currentPage}
                           onPageChange={(page) => setCurrentPage(page)}
                         />
@@ -475,14 +511,6 @@ const HomeScreen = ({ history }) => {
               <Card className='my-5'>
                 <Card.Header className='analytics-card'>CATEGORIES</Card.Header>
                 <Card.Body>
-                  <Card.Title>
-                    {' '}
-                    {categoryPieNames.map((x, index) => (
-                      <p className='text-info' key={index}>
-                        {x}: &#8369;{categoryPieData[index]}{' '}
-                      </p>
-                    ))}
-                  </Card.Title>
                   <CategoryListPie
                     categoryPieData={categoryPieData}
                     categoryPieNames={categoryPieNames}

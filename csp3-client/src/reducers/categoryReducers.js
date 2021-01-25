@@ -32,6 +32,7 @@ export const categoryListReducer = (state = { categories: [] }, action) => {
     case CATEGORY_LIST_SUCCESS:
       return {
         loading: false,
+        success: true,
         categories: action.payload.categories,
         total: action.payload.total.toLocaleString()
       }

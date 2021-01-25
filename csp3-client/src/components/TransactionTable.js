@@ -132,58 +132,61 @@ const TransactionTable = ({ outerElement }) => {
           </tr>
         </thead>
         <tbody>
-          {outerElement.map((outer) => {
-            return outer.transactionList.map((innerElement, index) => (
-              <tr
-                key={`tr-${index}`}
-                className={
-                  innerElement.itemType === 'income'
-                    ? 'table-success'
-                    : 'table-danger'
-                }
-              >
-                <th scope='row'>{index + 1}</th>
-                <td>{innerElement.transactionName}</td>
-                <td>{innerElement.transactionDesc}</td>
-                <td>
-                  &#8369;{innerElement.transactionAmount.toLocaleString()}
-                </td>
-                <td>{innerElement.timestamp.slice(0, 10)}</td>
-                <td>
-                  {' '}
-                  <Button
-                    variant='light'
-                    className='btn-sm'
-                    onClick={() => {
-                      handleShow()
-                      setEditCategoryId(outer._id)
-                      setEditTransactionId(innerElement._id)
-                      setEditName(
-                        `Item #${index + 1} - ${
-                          innerElement.transactionName
-                        } - ${innerElement.itemType.toUpperCase()}`
-                      )
-                      setNewName(innerElement.transactionName)
-                      setNewDesc(innerElement.transactionDesc)
-                      setNewAmount(innerElement.transactionAmount)
-                      setNewDate(new Date(innerElement.timestamp.slice(0, 10)))
-                    }}
-                    key={`button-${index}`}
-                  >
-                    <i className='fas fa-edit'></i>
-                  </Button>
-                  <Button
-                    variant='danger'
-                    className='btn-sm'
-                    onClick={() => deleteHandler(outer._id, innerElement._id)}
-                    key={`button-${index + 1}`}
-                  >
-                    <i className='fas fa-trash'></i>
-                  </Button>
-                </td>
-              </tr>
-            ))
-          })}
+          {outerElement &&
+            outerElement.map((outer) => {
+              return outer.transactionList.map((innerElement, index) => (
+                <tr
+                  key={`tr-${index}`}
+                  className={
+                    innerElement.itemType === 'income'
+                      ? 'table-success'
+                      : 'table-danger'
+                  }
+                >
+                  <th scope='row'>{index + 1}</th>
+                  <td>{innerElement.transactionName}</td>
+                  <td>{innerElement.transactionDesc}</td>
+                  <td>
+                    &#8369;{innerElement.transactionAmount.toLocaleString()}
+                  </td>
+                  <td>{innerElement.timestamp.slice(0, 10)}</td>
+                  <td>
+                    {' '}
+                    <Button
+                      variant='light'
+                      className='btn-sm'
+                      onClick={() => {
+                        handleShow()
+                        setEditCategoryId(outer._id)
+                        setEditTransactionId(innerElement._id)
+                        setEditName(
+                          `Item #${index + 1} - ${
+                            innerElement.transactionName
+                          } - ${innerElement.itemType.toUpperCase()}`
+                        )
+                        setNewName(innerElement.transactionName)
+                        setNewDesc(innerElement.transactionDesc)
+                        setNewAmount(innerElement.transactionAmount)
+                        setNewDate(
+                          new Date(innerElement.timestamp.slice(0, 10))
+                        )
+                      }}
+                      key={`button-${index}`}
+                    >
+                      <i className='fas fa-edit'></i>
+                    </Button>
+                    <Button
+                      variant='danger'
+                      className='btn-sm'
+                      onClick={() => deleteHandler(outer._id, innerElement._id)}
+                      key={`button-${index + 1}`}
+                    >
+                      <i className='fas fa-trash'></i>
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            })}
         </tbody>
       </Table>
     </>

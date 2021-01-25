@@ -7,6 +7,9 @@ import { logout } from '../actions/userActions'
 const Header = () => {
   const dispatch = useDispatch()
 
+  const categoryList = useSelector((state) => state.categoryList)
+  const { total } = categoryList
+
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
 
@@ -16,7 +19,7 @@ const Header = () => {
 
   return (
     <header>
-      <Navbar bg='dark' variant='dark' expand='lg' collapseOnSelect>
+      <Navbar bg='dark' variant='dark' expand='lg' fixed='top' collapseOnSelect>
         <Container className='px-5' fluid>
           <LinkContainer to={userInfo ? '/dashboard' : '/'}>
             <Navbar.Brand className='ml-5'>
@@ -31,6 +34,7 @@ const Header = () => {
               BudgetScribble
             </Navbar.Brand>
           </LinkContainer>
+          <i className='fas fa-money-bill'></i>&#8369;{total}
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
             <Nav className='mr-auto mx-5'>

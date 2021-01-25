@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { Table, Button, Modal, Form, Card } from 'react-bootstrap'
 import DatePicker from 'react-datepicker'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   updateTransaction,
   deleteTransaction
 } from '../actions/transactionActions'
 
-const TransactionRecords = ({ data, sortedField }) => {
+const TransactionRecords = ({ data }) => {
   //STATES FOR MODAL
   const [modalShow, setModalShow] = useState(false)
   const [newName, setNewName] = useState('')
@@ -21,6 +21,9 @@ const TransactionRecords = ({ data, sortedField }) => {
   const handleClose = () => setModalShow(false)
 
   const dispatch = useDispatch()
+
+  const transactionRecords = useSelector((state) => state.transactionRecords)
+  const { success } = transactionRecords
 
   const updateHandler = () => {
     dispatch(
@@ -105,77 +108,78 @@ const TransactionRecords = ({ data, sortedField }) => {
       <Table striped hover responsive>
         <thead>
           <tr className='table-dark'>
-            <th scope='col'>#</th>
+            <th scope='col'>DATE</th>
             <th scope='col'>CATEGORY</th>
             <th scope='col'>TYPE</th>
             <th scope='col'>TRANSACTION NAME</th>
-            <th scope='col'>DATE</th>
             <th scope='col'>TOTAL AMOUNT</th>
             <th scope='col'>ACTIONS</th>
           </tr>
         </thead>
         <tbody>
-          {data.map((transaction, index) => (
-            <tr
-              key={index + 1}
-              className={
-                transaction.transactionList.itemType === 'income'
-                  ? 'table-success'
-                  : 'table-danger'
-              }
-            >
-              <th scope='row'>{index + 1}</th>
-              <td>{transaction.categoryName}</td>
-              <td>{transaction.transactionList.itemType.toUpperCase()}</td>
-              <td>{transaction.transactionList.transactionName}</td>
-              <td>{transaction.transactionList.timestamp.slice(0, 10)}</td>
-              <td>
-                {transaction.transactionList.itemType === 'expenses'
-                  ? `-₱${transaction.transactionList.transactionAmount.toLocaleString()}`
-                  : `₱${transaction.transactionList.transactionAmount.toLocaleString()}`}
-              </td>
-              <td>
-                {' '}
-                <Button
-                  variant='light'
-                  className='btn-sm'
-                  onClick={() => {
-                    handleShow()
-                    setEditCategoryId(transaction._id)
-                    setEditTransactionId(transaction.transactionList._id)
-                    setEditName(
-                      `Item #${index + 1} - ${
-                        transaction.transactionList.transactionName
-                      } - ${transaction.transactionList.itemType.toUpperCase()}`
-                    )
-                    setNewName(transaction.transactionList.transactionName)
-                    setNewAmount(transaction.transactionList.transactionAmount)
-                    setNewDate(
-                      new Date(
-                        transaction.transactionList.timestamp.slice(0, 10)
+          {success &&
+            data.map((transaction, index) => (
+              <tr
+                key={index + 1}
+                className={
+                  transaction.transactionList.itemType === 'income'
+                    ? 'table-success'
+                    : 'table-danger'
+                }
+              >
+                <td>{transaction.transactionList.timestamp.slice(0, 10)}</td>
+                <td>{transaction.categoryName}</td>
+                <td>{transaction.transactionList.itemType.toUpperCase()}</td>
+                <td>{transaction.transactionList.transactionName}</td>
+                <td>
+                  {transaction.transactionList.itemType === 'expenses'
+                    ? `-₱${transaction.transactionList.transactionAmount.toLocaleString()}`
+                    : `₱${transaction.transactionList.transactionAmount.toLocaleString()}`}
+                </td>
+                <td>
+                  {' '}
+                  <Button
+                    variant='light'
+                    className='btn-sm'
+                    onClick={() => {
+                      handleShow()
+                      setEditCategoryId(transaction._id)
+                      setEditTransactionId(transaction.transactionList._id)
+                      setEditName(
+                        `Item #${index + 1} - ${
+                          transaction.transactionList.transactionName
+                        } - ${transaction.transactionList.itemType.toUpperCase()}`
                       )
-                    )
-                  }}
-                  key={`button-${index}`}
-                >
-                  <i className='fas fa-edit'></i>
-                </Button>
-                <Button
-                  variant='danger'
-                  className='btn-sm'
-                  onClick={() =>
-                    deleteHandler(
-                      transaction._id,
-                      transaction.transactionList._id
-                    )
-                  }
-                  key={`button-${index + 1}`}
-                >
-                  <i className='fas fa-trash'></i>
-                </Button>
-              </td>
-            </tr>
-          ))}
+                      setNewName(transaction.transactionList.transactionName)
+                      setNewAmount(
+                        transaction.transactionList.transactionAmount
+                      )
+                      setNewDate(
+                        new Date(
+                          transaction.transactionList.timestamp.slice(0, 10)
+                        )
+                      )
+                    }}
+                    key={`button-${index}`}
+                  >
+                    <i className='fas fa-edit'></i>
+                  </Button>
+                  <Button
+                    variant='danger'
+                    className='btn-sm'
+                    onClick={() =>
+                      deleteHandler(
+                        transaction._id,
+                        transaction.transactionList._id
+                      )
+                    }
+                    key={`button-${index + 1}`}
+                  >
+                    <i className='fas fa-trash'></i>
+                  </Button>
+                </td>
+              </tr>
+            ))}
         </tbody>
       </Table>
     </>

@@ -111,14 +111,15 @@ const IncomeTransactionScreen = () => {
                             onChange={(e) => setCategoryName(e.target.value)}
                           >
                             <option>Choose...</option>
-                            {list.map((category, index) => (
-                              <option
-                                key={index + 100}
-                                value={category.categoryName}
-                              >
-                                {category.categoryName}
-                              </option>
-                            ))}
+                            {list &&
+                              list.map((category, index) => (
+                                <option
+                                  key={index + 100}
+                                  value={category.categoryName}
+                                >
+                                  {category.categoryName}
+                                </option>
+                              ))}
                           </Form.Control>
                         </Form.Group>
 
@@ -191,39 +192,40 @@ const IncomeTransactionScreen = () => {
               </Col>
               <Col sm={12} md={12} lg={6}>
                 <Accordion>
-                  {list.map((outerElement, index) => (
-                    <Card
-                      key={`card-${index}`}
-                      className='text-center bg-income'
-                    >
-                      <Card.Header key={`header-${index}`}>
-                        <Accordion.Toggle
-                          as={Button}
-                          variant='link'
-                          eventKey={outerElement.categoryName}
-                          key={`acc-toggle-${index}`}
-                        >
-                          <i className='fas fa-angle-double-down fa-2x mr-2'></i>
-                          <div>
-                            {outerElement.categoryName}
-                            {' - '} &#8369;
-                            {outerElement.totalTransactionAmount.toLocaleString()}
-                          </div>
-                        </Accordion.Toggle>
-                      </Card.Header>
-                      <Accordion.Collapse
-                        eventKey={outerElement.categoryName}
-                        key={`acc-collapse-${index}`}
+                  {list &&
+                    list.map((outerElement, index) => (
+                      <Card
+                        key={`card-${index}`}
+                        className='text-center bg-income'
                       >
-                        <Card.Body key={`body-${index}`}>
-                          <TransactionTable
-                            outerElement={[outerElement]}
-                            key={`table-${index}`}
-                          />
-                        </Card.Body>
-                      </Accordion.Collapse>
-                    </Card>
-                  ))}
+                        <Card.Header key={`header-${index}`}>
+                          <Accordion.Toggle
+                            as={Button}
+                            variant='link'
+                            eventKey={outerElement.categoryName}
+                            key={`acc-toggle-${index}`}
+                          >
+                            <i className='fas fa-angle-double-down fa-2x mr-2'></i>
+                            <div>
+                              {outerElement.categoryName}
+                              {' - '} &#8369;
+                              {outerElement.totalTransactionAmount.toLocaleString()}
+                            </div>
+                          </Accordion.Toggle>
+                        </Card.Header>
+                        <Accordion.Collapse
+                          eventKey={outerElement.categoryName}
+                          key={`acc-collapse-${index}`}
+                        >
+                          <Card.Body key={`body-${index}`}>
+                            <TransactionTable
+                              outerElement={[outerElement]}
+                              key={`table-${index}`}
+                            />
+                          </Card.Body>
+                        </Accordion.Collapse>
+                      </Card>
+                    ))}
                 </Accordion>
               </Col>
             </Row>

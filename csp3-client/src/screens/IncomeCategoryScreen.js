@@ -183,48 +183,49 @@ const IncomeCategoryScreen = ({ history }) => {
                 </Card.Header>
                 <Card.Body>
                   <CategoryTable>
-                    {list.map((category, index) => (
-                      <tr key={index + 1} className='table-success'>
-                        <th scope='row'>{index + 1}</th>
-                        <td>{category.categoryName}</td>
-                        <td>{category.categoryDesc}</td>
-                        <td className='text-center'>
-                          {category.transactionCount}
-                        </td>
-                        <td>
-                          &#8369;
-                          {category.totalTransactionAmount.toLocaleString()}
-                        </td>
-                        <td>
-                          {' '}
-                          <Button
-                            variant='light'
-                            className='btn-sm'
-                            onClick={() => {
-                              handleShow()
-                              setEditCategoryId(category._id)
-                              setEditName(
-                                `Item #${index + 1} - ${
-                                  category.categoryName
-                                } - ${category.transactionType.toUpperCase()}`
-                              )
-                              setNewName(category.categoryName)
-                              setNewDesc(category.categoryDesc)
-                            }}
-                            key={`button-${index}`}
-                          >
-                            <i className='fas fa-edit'></i>
-                          </Button>
-                          <Button
-                            variant='danger'
-                            className='btn-sm'
-                            onClick={() => deleteHandler(category._id)}
-                          >
-                            <i className='fas fa-trash'></i>
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
+                    {list &&
+                      list.map((category, index) => (
+                        <tr key={index + 1} className='table-success'>
+                          <th scope='row'>{index + 1}</th>
+                          <td>{category.categoryName}</td>
+                          <td>{category.categoryDesc}</td>
+                          <td className='text-center'>
+                            {category.transactionCount}
+                          </td>
+                          <td>
+                            &#8369;
+                            {category.totalTransactionAmount.toLocaleString()}
+                          </td>
+                          <td>
+                            {' '}
+                            <Button
+                              variant='light'
+                              className='btn-sm'
+                              onClick={() => {
+                                handleShow()
+                                setEditCategoryId(category._id)
+                                setEditName(
+                                  `Item #${index + 1} - ${
+                                    category.categoryName
+                                  } - ${category.transactionType.toUpperCase()}`
+                                )
+                                setNewName(category.categoryName)
+                                setNewDesc(category.categoryDesc)
+                              }}
+                              key={`button-${index}`}
+                            >
+                              <i className='fas fa-edit'></i>
+                            </Button>
+                            <Button
+                              variant='danger'
+                              className='btn-sm'
+                              onClick={() => deleteHandler(category._id)}
+                            >
+                              <i className='fas fa-trash'></i>
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
                   </CategoryTable>
                 </Card.Body>
               </Card>
