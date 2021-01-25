@@ -1,0 +1,37 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Budget Tracker App Backend",
+  "main": "server.js",
+  "type": "module",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "colors": "^1.4.0",
+    "concurrently": "^5.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "google-auth-library": "^6.1.4",
+    "google-oauth-jwt": "^0.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.11.11",
+    "nodemon": "^2.0.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node csp3-server/server",
+    "server": "nodemon csp3-server/server",
+    "client": "npm start --prefix csp3-client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "data:import": "node backend/seeder",
+    "data:destroy": "node backend/seeder -d",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix csp3-client && npm run build --prefix frontend"
+  },
+  "author": "Angelo Bihis",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.com:tuitt/students/batch68/marcelo-bihis/csp3-server.git"
+  }
+}

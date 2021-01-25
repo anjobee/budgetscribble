@@ -1,0 +1,49 @@
+.bg-expenses {
+  background-color: #ff6961;
+}
+
+.center {
+  text-align: center;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+body {
+  background-color: #ededed;
+}
+
+.jumbotron {
+  background-color: white;
+}
+
+.bg-jumbotron {
+  background-color: #f3ffe2;
+}
+
+.card-header {
+  font-size: 30px;
+}
+
+.transaction-card {
+  background-image: linear-gradient(to right, #ecc9c9, #c9ecc9);
+}
+
+.analytics-card {
+  background-image: linear-gradient(to right, #ffb6c1, #add8e6);
+}
+
+.expenses-card {
+  background-image: linear-gradient(to right, #ffb6c1, #add8e6);
+}
+
+.income-card {
+  background-image: linear-gradient(to right, #c9ecc9, #add8e6);
+}
+
+.common-card {
+  background-image: linear-gradient(to right, #bababa, #d3d3d3);
+}
