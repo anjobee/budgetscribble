@@ -34,7 +34,11 @@ const Header = () => {
               BudgetScribble
             </Navbar.Brand>
           </LinkContainer>
-          <i className='fas fa-money-bill'></i>&#8369;{total}
+          {userInfo && (
+            <>
+              <i className='fas fa-money-bill'></i> &#8369;{total}
+            </>
+          )}
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
             <Nav className='mr-auto mx-5'>
@@ -81,11 +85,18 @@ const Header = () => {
                   </NavDropdown.Item>
                 </NavDropdown>
               ) : (
-                <LinkContainer to='/'>
-                  <Nav.Link>
-                    <i className='fas fa-user px-3'></i>Sign In
-                  </Nav.Link>
-                </LinkContainer>
+                <>
+                  <LinkContainer to='/'>
+                    <Nav.Link>
+                      <i className='fas fa-user px-1'></i>Sign In
+                    </Nav.Link>
+                  </LinkContainer>
+                  <LinkContainer to='/register'>
+                    <Nav.Link>
+                      <i className='fas fa-user-plus px-1'></i>Sign Up
+                    </Nav.Link>
+                  </LinkContainer>
+                </>
               )}
             </Nav>
           </Navbar.Collapse>

@@ -273,7 +273,7 @@ const HomeScreen = ({ history }) => {
                             onChange={(e) => setCategoryName(e.target.value)}
                           >
                             <option>Choose...</option>
-                            {!loading &&
+                            {categories &&
                               categories.map((category, index) => (
                                 <option
                                   className={
@@ -385,7 +385,7 @@ const HomeScreen = ({ history }) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {!loading &&
+                        {categoryData &&
                           categoryData.map((category, index) => (
                             <tr
                               key={index + 1}

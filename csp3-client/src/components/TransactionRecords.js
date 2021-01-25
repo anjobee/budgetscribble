@@ -117,7 +117,7 @@ const TransactionRecords = ({ data }) => {
           </tr>
         </thead>
         <tbody>
-          {success &&
+          {data &&
             data.map((transaction, index) => (
               <tr
                 key={index + 1}
