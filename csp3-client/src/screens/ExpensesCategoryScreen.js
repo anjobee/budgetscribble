@@ -190,7 +190,9 @@ const ExpensesCategoryScreen = ({ history }) => {
                         <th scope='row'>{index + 1}</th>
                         <td>{category.categoryName}</td>
                         <td>{category.categoryDesc}</td>
-                        <td>{category.transactionCount}</td>
+                        <td className='text-center'>
+                          {category.transactionCount}
+                        </td>
                         <td>
                           &#8369;
                           {category.totalTransactionAmount.toLocaleString()}

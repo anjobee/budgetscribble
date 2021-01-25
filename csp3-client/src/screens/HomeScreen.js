@@ -2,16 +2,8 @@ import React, { useState, useEffect } from 'react'
 import DatePicker from 'react-datepicker'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  Container,
-  Table,
-  Form,
-  Row,
-  Col,
-  Button,
-  Card,
-  Modal
-} from 'react-bootstrap'
+import { Container, Table, Form, Row, Col, Button, Card } from 'react-bootstrap'
+import TransactionRecords from '../components/TransactionRecords'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import Meta from '../components/Meta'
@@ -23,7 +15,6 @@ import {
   getTransactionRecords,
   getTransactionTrend,
   addTransaction,
-  updateTransaction,
   deleteTransaction
 } from '../actions/transactionActions'
 import CategoryListPie from '../components/CategoryListPie'
@@ -38,9 +29,6 @@ const HomeScreen = ({ history }) => {
     history.push('/login')
   }
 
-  const [startRange, setStartRange] = useState(1)
-  const [endRange, setEndRange] = useState(12)
-
   //STATES FOR ADD TRANSACTION CARD
   const [categoryName, setCategoryName] = useState('')
   const [transactionName, setTransactionName] = useState('')
@@ -48,22 +36,7 @@ const HomeScreen = ({ history }) => {
   const [transactionAmount, setTransactionAmount] = useState(0)
   const [date, setDate] = useState(new Date())
 
-  //STATES FOR MODAL
-  const [modalShow, setModalShow] = useState(false)
-  const [newName, setNewName] = useState('')
-  const [newDate, setNewDate] = useState(new Date())
-  const [newAmount, setNewAmount] = useState(0)
-  const [editName, setEditName] = useState('')
-  const [editCategoryId, setEditCategoryId] = useState('')
-  const [editTransactionId, setEditTransactionId] = useState('')
-
-  const handleShow = () => setModalShow(true)
-  const handleClose = () => setModalShow(false)
-
-  //TABLE SORT
-  const [sortedField, setSortedField] = useState(null)
-  console.log(sortedField)
-
+  // TRANSACTIONS QUERY SECTION-------------------------------------------
   const categoryList = useSelector((state) => state.categoryList)
   const { loading, categories, total, error } = categoryList
 
@@ -84,6 +57,7 @@ const HomeScreen = ({ history }) => {
     error: errorTransactionTrend
   } = transactionTrendList
 
+  // TRANSACTIONS RECORD/HISTORY-------------------------------------------
   const transactionRecords = useSelector((state) => state.transactionRecords)
   const {
     loading: loadingTransactionRecords,
@@ -91,6 +65,29 @@ const HomeScreen = ({ history }) => {
     error: errorTransactionRecords
   } = transactionRecords
 
+  //TABLE SORT
+  const [sortedField, setSortedField] = useState('')
+
+  function filterQuery(sortedField) {
+    return transactions.filter(
+      (x) =>
+        x.categoryName.toUpperCase().indexOf(sortedField.toUpperCase()) > -1 ||
+        x.transactionList.transactionName
+          .toUpperCase()
+          .indexOf(sortedField.toUpperCase()) > -1 ||
+        x.transactionList.itemType
+          .toUpperCase()
+          .indexOf(sortedField.toUpperCase()) > -1 ||
+        x.transactionList.timestamp
+          .slice(0, 10)
+          .indexOf(sortedField.toUpperCase()) > -1 ||
+        JSON.stringify(x.transactionList.transactionAmount).indexOf(
+          sortedField
+        ) > -1
+    )
+  }
+
+  //TRANSASCTIONS ADD/UPDATE/DELETE-------------------------------------------
   const transactionAdd = useSelector((state) => state.transactionAdd)
   const { success: successAdd } = transactionAdd
 
@@ -100,6 +97,7 @@ const HomeScreen = ({ history }) => {
   const transactionDelete = useSelector((state) => state.transactionDelete)
   const { success: successDelete } = transactionDelete
 
+  //REDUX - QUERY DATA UPON RELOAD-------------------------------------------
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -109,34 +107,7 @@ const HomeScreen = ({ history }) => {
     dispatch(getTransactionRecords())
   }, [dispatch, success, successAdd, successDelete])
 
-  let totalIncome = 0
-  let totalExpenses = 0
-
-  if (!loadingTotal) {
-    const income = categoriesTotal.filter((x) => x.transactionType === 'income')
-    const expenses = categoriesTotal.filter(
-      (x) => x.transactionType === 'expenses'
-    )
-
-    income.forEach((x) => (totalIncome += x.totalTransactionAmount))
-    expenses.forEach((x) => (totalExpenses += x.totalTransactionAmount))
-  }
-
-  const submitHandler = () => {
-    dispatch(
-      updateTransaction(
-        editCategoryId,
-        editTransactionId,
-        newName,
-        null,
-        newAmount,
-        newDate
-      )
-    )
-    setNewName('')
-    setNewAmount(0)
-    setEditName('')
-  }
+  //SUBMIT HANDLERS EDIT/ADD/DELETE-------------------------------------------
 
   const submitTransactionHandler = () => {
     dispatch(
@@ -159,6 +130,9 @@ const HomeScreen = ({ history }) => {
     }
   }
 
+  //CHART DATA INITIALIZATION-------------------------------------------
+
+  //CATEGORY PIE DATA
   let categoryPieData
   let categoryPieNames
 
@@ -169,65 +143,27 @@ const HomeScreen = ({ history }) => {
     categoryPieNames = categoriesTotal.map((category) => category.categoryName)
   }
 
+  //INCOME % VS EXPENSES % PIE CHART-------------------------------------------
+  let totalIncome = 0
+  let totalExpenses = 0
+
+  if (!loadingTotal) {
+    const income = categoriesTotal.filter((x) => x.transactionType === 'income')
+    const expenses = categoriesTotal.filter(
+      (x) => x.transactionType === 'expenses'
+    )
+
+    income.forEach((x) => (totalIncome += x.totalTransactionAmount))
+    expenses.forEach((x) => (totalExpenses += x.totalTransactionAmount))
+  }
+
+  //LINE CHART RANGE
+  const [startRange, setStartRange] = useState(1)
+  const [endRange, setEndRange] = useState(12)
+
   return (
     <>
       <Meta title='BudgetScribble' />
-      <Modal show={modalShow} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Transaction</Modal.Title>
-        </Modal.Header>
-        <Card.Body>
-          <Card.Title>{editName}</Card.Title>
-          <Form>
-            <Form.Group controlId='newName'>
-              <Form.Label>Transaction Name</Form.Label>
-              <Form.Control
-                type='text'
-                placeholder='Enter new name'
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group controlId='newAmount'>
-              <Form.Label>Transaction Amount</Form.Label>
-              <Form.Control
-                type='number'
-                value={newAmount}
-                onChange={(e) => setNewAmount(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group>
-              <Form.Label>Select New Date</Form.Label>
-              <br />
-              <DatePicker
-                selected={newDate}
-                onChange={(d) =>
-                  setNewDate(
-                    new Date(d.getTime() - d.getTimezoneOffset() * 60000)
-                  )
-                }
-              />
-            </Form.Group>
-          </Form>
-        </Card.Body>
-
-        <Modal.Footer>
-          <Button variant='secondary' onClick={handleClose}>
-            Close
-          </Button>
-          <Button
-            variant='primary'
-            onClick={() => {
-              submitHandler()
-              handleClose()
-            }}
-          >
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
       <Row className='justify-content-md-center'>
         <Col md={8}>
           {' '}
@@ -306,7 +242,7 @@ const HomeScreen = ({ history }) => {
                           controlId='transactionName'
                           as={Col}
                           sm={7}
-                          className='mt-1'
+                          className='mt-2'
                         >
                           <Form.Label>Transaction Name</Form.Label>
                           <Form.Control
@@ -383,7 +319,9 @@ const HomeScreen = ({ history }) => {
                           <th scope='col'>#</th>
                           <th scope='col'>CATEGORY NAME</th>
                           <th scope='col'>TYPE</th>
-                          <th scope='col'>ENTRIES</th>
+                          <th scope='col' className='text-center'>
+                            ENTRIES
+                          </th>
                           <th scope='col'>TOTAL AMOUNT</th>
                           <th scope='col'>ACTIONS</th>
                         </tr>
@@ -401,7 +339,9 @@ const HomeScreen = ({ history }) => {
                             <th scope='row'>{index + 1}</th>
                             <td>{category.categoryName}</td>
                             <td>{category.transactionType.toUpperCase()}</td>
-                            <td>{category.transactionCount}</td>
+                            <td className='text-center'>
+                              {category.transactionCount}
+                            </td>
                             <td>
                               {category.transactionType === 'expenses'
                                 ? `-₱${category.totalTransactionAmount.toLocaleString()}`
@@ -446,137 +386,16 @@ const HomeScreen = ({ history }) => {
                     TRANSACTION HISTORY
                   </Card.Header>
                   <Card.Body>
-                    {' '}
-                    <Table striped hover responsive>
-                      <thead>
-                        <tr className='table-dark'>
-                          <th scope='col'>#</th>
-                          <th scope='col'>
-                            <Link
-                              onClick={() => setSortedField('category')}
-                              className='text-light'
-                              style={{ textDecoration: 'none' }}
-                            >
-                              {' '}
-                              CATEGORY
-                            </Link>
-                          </th>
-                          <th scope='col'>
-                            {' '}
-                            <Link
-                              onClick={() => setSortedField('name')}
-                              className='text-light'
-                              style={{ textDecoration: 'none' }}
-                            >
-                              {' '}
-                              TRANSACTION NAME
-                            </Link>
-                          </th>
-                          <th scope='col'>
-                            <Link
-                              onClick={() => setSortedField('date')}
-                              className='text-light'
-                              style={{ textDecoration: 'none' }}
-                            >
-                              {' '}
-                              DATE
-                            </Link>
-                          </th>
-                          <th scope='col'>
-                            <Link
-                              onClick={() => setSortedField('amount')}
-                              className='text-light'
-                              style={{ textDecoration: 'none' }}
-                            >
-                              {' '}
-                              TOTAL AMOUNT
-                            </Link>
-                          </th>
-                          <th scope='col'>ACTIONS</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {transactions.map((transaction, index) => (
-                          <tr
-                            key={index + 1}
-                            className={
-                              transaction.transactionList.itemType === 'income'
-                                ? 'table-success'
-                                : 'table-danger'
-                            }
-                          >
-                            <th scope='row'>{index + 1}</th>
-                            <td>{transaction.categoryName}</td>
-                            <td>
-                              {transaction.transactionList.transactionName}
-                            </td>
-                            <td>
-                              {transaction.transactionList.timestamp.slice(
-                                0,
-                                10
-                              )}
-                            </td>
-                            <td>
-                              {transaction.transactionList.itemType ===
-                              'expenses'
-                                ? `-₱${transaction.transactionList.transactionAmount.toLocaleString()}`
-                                : `₱${transaction.transactionList.transactionAmount.toLocaleString()}`}
-                            </td>
-                            <td>
-                              {' '}
-                              <Button
-                                variant='light'
-                                className='btn-sm'
-                                onClick={() => {
-                                  handleShow()
-                                  setEditCategoryId(transaction._id)
-                                  setEditTransactionId(
-                                    transaction.transactionList._id
-                                  )
-                                  setEditName(
-                                    `Item #${index + 1} - ${
-                                      transaction.transactionList
-                                        .transactionName
-                                    } - ${transaction.transactionList.itemType.toUpperCase()}`
-                                  )
-                                  setNewName(
-                                    transaction.transactionList.transactionName
-                                  )
-                                  setNewAmount(
-                                    transaction.transactionList
-                                      .transactionAmount
-                                  )
-                                  setNewDate(
-                                    new Date(
-                                      transaction.transactionList.timestamp.slice(
-                                        0,
-                                        10
-                                      )
-                                    )
-                                  )
-                                }}
-                                key={`button-${index}`}
-                              >
-                                <i className='fas fa-edit'></i>
-                              </Button>
-                              <Button
-                                variant='danger'
-                                className='btn-sm'
-                                onClick={() =>
-                                  deleteHandler(
-                                    transaction._id,
-                                    transaction.transactionList._id
-                                  )
-                                }
-                                key={`button-${index + 1}`}
-                              >
-                                <i className='fas fa-trash'></i>
-                              </Button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
+                    <Form.Group controlId='searchKeyword'>
+                      <Form.Label>Search</Form.Label>
+                      <Form.Control
+                        type='text'
+                        placeholder='Enter keyword'
+                        value={sortedField}
+                        onChange={(e) => setSortedField(e.target.value)}
+                      ></Form.Control>
+                    </Form.Group>
+                    <TransactionRecords data={filterQuery(sortedField)} />
                   </Card.Body>
                 </Card>
               </>
@@ -629,7 +448,7 @@ const HomeScreen = ({ history }) => {
                     {' '}
                     {categoryPieNames.map((x, index) => (
                       <p className='text-info' key={index}>
-                        {x}: {categoryPieData[index]}{' '}
+                        {x}: &#8369;{categoryPieData[index]}{' '}
                       </p>
                     ))}
                   </Card.Title>

@@ -52,6 +52,7 @@ export const categoryListTotalReducer = (
     case CATEGORY_LIST_TOTAL_SUCCESS:
       return {
         loading: false,
+        success: true,
         categories: action.payload.result
       }
     case CATEGORY_LIST_TOTAL_FAIL:

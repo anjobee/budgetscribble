@@ -11,7 +11,6 @@ import IncomeCategoryScreen from './screens/IncomeCategoryScreen'
 import ExpensesCategoryScreen from './screens/ExpensesCategoryScreen'
 import IncomeTransactionScreen from './screens/IncomeTransactionScreen'
 import ExpensesTransactionScreen from './screens/ExpensesTransactionScreen'
-import EditTransaction from './screens/EditTransaction'
 
 function App() {
   return (
@@ -42,7 +41,6 @@ function App() {
           component={ExpensesTransactionScreen}
           exact
         />
-        <Route path='/transactions/edit' component={EditTransaction} exact />
       </Container>
       <Footer />
     </Router>

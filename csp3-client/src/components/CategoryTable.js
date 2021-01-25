@@ -9,7 +9,9 @@ const CategoryTable = ({ children }) => {
           <th scope='col'>#</th>
           <th scope='col'>CATEGORY NAME</th>
           <th scope='col'>CATEGORY DESCRIPTION</th>
-          <th scope='col'>TRANSACTION ENTRIES</th>
+          <th scope='col' className='text-center'>
+            TRANSACTION ENTRIES
+          </th>
           <th scope='col'>TOTAL AMOUNT</th>
           <th scope='col'>ACTIONS</th>
         </tr>

@@ -194,7 +194,7 @@ const IncomeTransactionScreen = () => {
                   {list.map((outerElement, index) => (
                     <Card
                       key={`card-${index}`}
-                      className='text-center bg-success'
+                      className='text-center bg-income'
                     >
                       <Card.Header key={`header-${index}`}>
                         <Accordion.Toggle

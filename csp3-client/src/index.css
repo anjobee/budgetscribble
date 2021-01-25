@@ -1,7 +1,3 @@
-.bg-expenses {
-  background-color: #ff6961;
-}
-
 .center {
   text-align: center;
 }
@@ -46,4 +42,20 @@ body {
 
 .common-card {
   background-image: linear-gradient(to right, #bababa, #d3d3d3);
+}
+
+.bg-expenses {
+  background-color: #fa938e;
+}
+
+.bg-expenses:hover {
+  background-color: #ff6961;
+}
+
+.bg-income {
+  background-color: #87f88d;
+}
+
+.bg-income:hover {
+  background-color: #73f17a;
 }

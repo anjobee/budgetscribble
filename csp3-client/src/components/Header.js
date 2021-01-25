@@ -19,7 +19,17 @@ const Header = () => {
       <Navbar bg='dark' variant='dark' expand='lg' collapseOnSelect>
         <Container className='px-5' fluid>
           <LinkContainer to={userInfo ? '/dashboard' : '/'}>
-            <Navbar.Brand className='ml-5'>BudgetScribble</Navbar.Brand>
+            <Navbar.Brand className='ml-5'>
+              {' '}
+              <img
+                src='/logo.png'
+                width='30'
+                height='30'
+                className='d-inline-block align-center'
+                alt='coin'
+              />
+              BudgetScribble
+            </Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>

@@ -81,6 +81,7 @@ export const transactionRecordsReducer = (
     case TRANSACTION_RECORDS_SUCCESS:
       return {
         loading: false,
+        success: true,
         transactions: action.payload
       }
     case TRANSACTION_RECORDS_FAIL:

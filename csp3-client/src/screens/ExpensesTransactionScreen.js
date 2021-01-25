@@ -207,8 +207,7 @@ const ExpensesTransactionScreen = () => {
                           <i className='fas fa-angle-double-down fa-2x mr-2'></i>
                           <div>
                             {' '}
-                            {outerElement.categoryName}
-                            {' - '} &#8369;
+                            {outerElement.categoryName} {' - '} &#8369;
                             {outerElement.totalTransactionAmount.toLocaleString()}
                           </div>
                         </Accordion.Toggle>
