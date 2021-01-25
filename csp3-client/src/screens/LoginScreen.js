@@ -36,6 +36,7 @@ const LoginScreen = ({ location, history }) => {
   }
 
   function authenticateGoogleToken(response) {
+    console.log(response)
     dispatch(googleLogin(response.tokenId))
   }
 
