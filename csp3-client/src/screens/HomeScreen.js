@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import DatePicker from 'react-datepicker'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { Container, Table, Form, Row, Col, Button, Card } from 'react-bootstrap'
 import TransactionRecords from '../components/TransactionRecords'
+import Paginate from '../components/Paginate'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import Meta from '../components/Meta'
@@ -62,30 +63,47 @@ const HomeScreen = ({ history }) => {
   const {
     loading: loadingTransactionRecords,
     transactions,
+    success: successTransactionRecords,
     error: errorTransactionRecords
   } = transactionRecords
 
-  //TABLE SORT
-  const [sortedField, setSortedField] = useState('')
+  const [filter, setFilter] = useState('')
 
-  function filterQuery(sortedField) {
+  //TABLE PAGINATION
+  const [totalItems, setTotalItems] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const ITEMS_PER_PAGE = 5
+
+  //TABLE FILTER
+  const filterQuery = (filter) => {
     return transactions.filter(
       (x) =>
-        x.categoryName.toUpperCase().indexOf(sortedField.toUpperCase()) > -1 ||
+        x.categoryName.toUpperCase().indexOf(filter.toUpperCase()) > -1 ||
         x.transactionList.transactionName
           .toUpperCase()
-          .indexOf(sortedField.toUpperCase()) > -1 ||
-        x.transactionList.itemType
-          .toUpperCase()
-          .indexOf(sortedField.toUpperCase()) > -1 ||
-        x.transactionList.timestamp
-          .slice(0, 10)
-          .indexOf(sortedField.toUpperCase()) > -1 ||
-        JSON.stringify(x.transactionList.transactionAmount).indexOf(
-          sortedField
-        ) > -1
+          .indexOf(filter.toUpperCase()) > -1 ||
+        x.transactionList.itemType.toUpperCase().indexOf(filter.toUpperCase()) >
+          -1 ||
+        x.transactionList.timestamp.slice(0, 10).indexOf(filter.toUpperCase()) >
+          -1 ||
+        JSON.stringify(x.transactionList.transactionAmount).indexOf(filter) > -1
     )
   }
+
+  const recordData = useMemo(() => {
+    let computedRecords = filterQuery(filter)
+
+    setTotalItems(computedRecords.length)
+
+    return computedRecords.slice(
+      (currentPage - 1) * ITEMS_PER_PAGE,
+      (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
+    )
+  }, [filter, currentPage, successTransactionRecords])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filter])
 
   //TRANSASCTIONS ADD/UPDATE/DELETE-------------------------------------------
   const transactionAdd = useSelector((state) => state.transactionAdd)
@@ -386,16 +404,29 @@ const HomeScreen = ({ history }) => {
                     TRANSACTION HISTORY
                   </Card.Header>
                   <Card.Body>
-                    <Form.Group controlId='searchKeyword'>
-                      <Form.Label>Search</Form.Label>
-                      <Form.Control
-                        type='text'
-                        placeholder='Enter keyword'
-                        value={sortedField}
-                        onChange={(e) => setSortedField(e.target.value)}
-                      ></Form.Control>
-                    </Form.Group>
-                    <TransactionRecords data={filterQuery(sortedField)} />
+                    <Row>
+                      <Col>
+                        <Form.Group controlId='searchKeyword'>
+                          <Form.Label>Search</Form.Label>
+                          <Form.Control
+                            type='text'
+                            sm={5}
+                            placeholder='Enter keyword'
+                            value={filter}
+                            onChange={(e) => setFilter(e.target.value)}
+                          ></Form.Control>
+                        </Form.Group>
+                      </Col>
+                      <Col>
+                        <Paginate
+                          total={totalItems}
+                          itemsPerPage={ITEMS_PER_PAGE}
+                          currentPage={currentPage}
+                          onPageChange={(page) => setCurrentPage(page)}
+                        />
+                      </Col>
+                    </Row>
+                    <TransactionRecords data={recordData} />
                   </Card.Body>
                 </Card>
               </>
