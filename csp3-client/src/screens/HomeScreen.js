@@ -91,8 +91,14 @@ const HomeScreen = ({ history }) => {
     error: errorTransactionRecords
   } = transactionRecords
 
+  const transactionAdd = useSelector((state) => state.transactionAdd)
+  const { success: successAdd } = transactionAdd
+
   const transactionUpdate = useSelector((state) => state.transactionUpdate)
   const { success } = transactionUpdate
+
+  const transactionDelete = useSelector((state) => state.transactionDelete)
+  const { success: successDelete } = transactionDelete
 
   const dispatch = useDispatch()
 
@@ -101,7 +107,7 @@ const HomeScreen = ({ history }) => {
     dispatch(getTotalCategoryList())
     dispatch(getTransactionTrend())
     dispatch(getTransactionRecords())
-  }, [dispatch, success])
+  }, [dispatch, success, successAdd, successDelete])
 
   let totalIncome = 0
   let totalExpenses = 0
@@ -263,7 +269,7 @@ const HomeScreen = ({ history }) => {
                     ADD TRANSACTION
                   </Card.Header>
                   <Card.Body>
-                    <Form onSubmit={submitTransactionHandler}>
+                    <Form>
                       <Form.Row>
                         <Form.Group as={Col} className='mt-1'>
                           <Form.Label
@@ -357,7 +363,10 @@ const HomeScreen = ({ history }) => {
                         </Form.Group>
                       </Form.Row>
 
-                      <Button type='submit' variant='primary'>
+                      <Button
+                        variant='primary'
+                        onClick={submitTransactionHandler}
+                      >
                         Add
                       </Button>
                     </Form>
