@@ -36,7 +36,10 @@ const Header = () => {
           </LinkContainer>
           {userInfo && (
             <>
-              <i className='fas fa-money-bill'></i> &#8369;{total}
+              <i className='fas fa-money-bill text-white'></i>{' '}
+              <p className='text-white my-auto' style={{ fontSize: '20px' }}>
+                &#8369;{total}
+              </p>
             </>
           )}
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
