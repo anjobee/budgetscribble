@@ -1,4 +1,5 @@
 import express from 'express'
+import path from 'path'
 import colors from 'colors'
 import dotenv from 'dotenv'
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
@@ -18,13 +19,22 @@ app.use(cors())
 
 app.use(express.json())
 
-app.get('/', (req, res) => {
-  res.send('Server is running...')
-})
-
 app.use('/api/users', userRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/transactions', transactionRoutes)
+
+const __dirname = path.resolve()
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '/csp3-client/build')))
+
+  app.get('*', (req, res) =>
+    res.sendFile(path.resolve(__dirname, 'csp3-client', 'build', 'index.html'))
+  )
+} else {
+  app.get('/', (req, res) => {
+    res.send('Server is running...')
+  })
+}
 
 app.use(notFound)
 
