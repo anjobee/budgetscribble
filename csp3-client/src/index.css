@@ -89,3 +89,7 @@ footer {
 .app-container {
   min-height: 93vh;
 }
+
+table {
+  font-size: 18px;
+}
