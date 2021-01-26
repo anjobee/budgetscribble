@@ -156,7 +156,7 @@ const HomeScreen = ({ history }) => {
     dispatch(getTotalCategoryList())
     dispatch(getTransactionTrend())
     dispatch(getTransactionRecords())
-  }, [dispatch, success, successAdd, successDelete, successCategoryDelete])
+  }, [success, successAdd, successDelete, successCategoryDelete, dispatch])
 
   //SUBMIT HANDLERS EDIT/ADD/DELETE-------------------------------------------
 
@@ -360,7 +360,7 @@ const HomeScreen = ({ history }) => {
                     </Form>
                   </Card.Body>
                 </Card>
-                <Card className='mt-3'>
+                <Card className='my-5'>
                   <Card.Header className='transaction-card'>
                     CATEGORY LIST
                   </Card.Header>

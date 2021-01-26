@@ -15,10 +15,10 @@ const LoginScreen = ({ location, history }) => {
   const dispatch = useDispatch()
 
   const userLogin = useSelector((state) => state.userLogin)
-  const { loading, error, userInfo } = userLogin
+  const { error, userInfo } = userLogin
 
   const userGoogleLogin = useSelector((state) => state.userGoogleLogin)
-  const { loading: googleLoading, error: googleError } = userGoogleLogin
+  const { error: googleError } = userGoogleLogin
 
   const redirect = location.search
     ? location.search.split('=')[1]
@@ -42,8 +42,6 @@ const LoginScreen = ({ location, history }) => {
   return (
     <Container className='mt-5'>
       <Meta title='Sign In | BudgetScribble' />
-      {googleLoading && <Loader />}
-      {loading && <Loader />}
       <Row>
         <Col sm={12} md={6} className='mx-auto'>
           <Card>

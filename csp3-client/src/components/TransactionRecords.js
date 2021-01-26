@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Table, Button, Modal, Form, Card } from 'react-bootstrap'
 import DatePicker from 'react-datepicker'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import {
   updateTransaction,
   deleteTransaction
@@ -11,6 +11,7 @@ const TransactionRecords = ({ data }) => {
   //STATES FOR MODAL
   const [modalShow, setModalShow] = useState(false)
   const [newName, setNewName] = useState('')
+  const [newDesc, setNewDesc] = useState('')
   const [newDate, setNewDate] = useState(new Date())
   const [newAmount, setNewAmount] = useState(0)
   const [editName, setEditName] = useState('')
@@ -22,16 +23,13 @@ const TransactionRecords = ({ data }) => {
 
   const dispatch = useDispatch()
 
-  const transactionRecords = useSelector((state) => state.transactionRecords)
-  const { loading, success, list } = transactionRecords
-
   const updateHandler = () => {
     dispatch(
       updateTransaction(
         editCategoryId,
         editTransactionId,
         newName,
-        null,
+        newDesc,
         newAmount,
         newDate
       )
@@ -63,6 +61,15 @@ const TransactionRecords = ({ data }) => {
                 placeholder='Enter new name'
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+
+            <Form.Group controlId='newDesc'>
+              <Form.Label>Transaction Description</Form.Label>
+              <Form.Control
+                type='text'
+                value={newDesc}
+                onChange={(e) => setNewDesc(e.target.value)}
               ></Form.Control>
             </Form.Group>
 

@@ -119,16 +119,125 @@ const changePassword = asyncHandler(async (req, res) => {
 
   const user = await User.findById(req.user.id)
 
-  if (user && (await user.matchPassword(oldPassword))) {
-    user.password = newPassword
+  if (user) {
+    if (user.password === oldPassword) {
+      user.password = newPassword
+    } else {
+      res.status(400)
+      throw new Error('Old password incorrect')
+    }
 
     user.save()
 
-    res.status(200)
+    res.status(200).json({ message: 'Password successfully changed' })
   } else {
     res.status(401)
-    throw new Error('Old password incorrect')
+    throw new Error('Unauthorized')
   }
 })
 
-export { authGoogleUser, authUser, registerUser, changePassword }
+//@desc     Forgot password
+//@route    POST /api/users/forgotpassword
+//@access   Public
+const forgotPassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email })
+
+  if (!user) {
+    return next(new ErrorResponse('There is no user with that email.', 404))
+  }
+
+  const resetToken = user.getResetPasswordToken()
+
+  await user.save({ validateBeforeSave: false })
+
+  const resetUrl = `${req.protocol}://${req.get(
+    'host'
+  )}/api/users/resetpassword/${resetToken}`
+
+  const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a reset password request to: \n\n ${resetUrl}`
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Password reset token.',
+      message
+    })
+
+    res.status(200).json({ success: true, data: 'Email sent.' })
+    next()
+  } catch (err) {
+    console.log(err)
+    user.getResetPasswordToken = undefined
+    user.getResetPasswordExpire = undefined
+
+    await user.save({ validateBeforeSave: false })
+
+    return next(new ErrorResponse('Email could not be sent', 500))
+  }
+  //I COMMENTED THIS RESPONSE BECAUSE IT CAUSES ERROR: ERR_HTTP_HEADERS_SENT
+  // res
+  // .status(200)
+  // .json({
+  //     success: true,
+  //     data: user
+  // });
+})
+
+//@desc     Reset password
+//@route    PUT /api/users/resetpassword/:resettoken
+//@access   Public
+const resetPassword = asyncHandler(async (req, res, next) => {
+  //Get hashed token
+  const resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(req.params.resettoken)
+    .digest('hex')
+
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() }
+  })
+
+  if (!user) {
+    return next(new ErrorResponse('Invalid token.', 400))
+  }
+
+  //Set new password
+  user.password = req.body.password
+  user.resetPasswordToken = undefined
+  user.resetPasswordExpire = undefined
+  await user.save()
+
+  sendTokenResponse(user, 200, res)
+})
+
+//Get Token from model, create cookie and send response
+const sendTokenResponse = (user, statusCode, res) => {
+  //Create Token
+  const token = user.getSignedJwtToken()
+
+  const options = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true
+  }
+
+  //ADD A SECURE FLAG TO THE COOKIE WHEN IN PRODUCTION ENVIRONMENT
+  if (process.env.NODE_ENV === 'production') {
+    options.secure = true
+  }
+
+  res
+    .status(statusCode)
+    .cookie('token', token, options)
+    .json({ success: true, token })
+}
+
+export {
+  authGoogleUser,
+  authUser,
+  registerUser,
+  changePassword,
+  forgotPassword
+}

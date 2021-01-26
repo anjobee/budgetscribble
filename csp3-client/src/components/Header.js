@@ -22,7 +22,7 @@ const Header = () => {
       <Navbar bg='dark' variant='dark' expand='lg' fixed='top' collapseOnSelect>
         <Container className='px-5' fluid>
           <LinkContainer to={userInfo ? '/dashboard' : '/'}>
-            <Navbar.Brand className='ml-5'>
+            <Navbar.Brand className='mr-auto'>
               {' '}
               <img
                 src='/logo.png'
@@ -34,19 +34,16 @@ const Header = () => {
               BudgetScribble
             </Navbar.Brand>
           </LinkContainer>
-          {userInfo && (
-            <>
-              <i className='fas fa-money-bill text-white'></i>{' '}
-              <p className='text-white my-auto' style={{ fontSize: '20px' }}>
-                &#8369;{total}
-              </p>
-            </>
-          )}
+
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
             <Nav className='mr-auto mx-5'>
               {userInfo && (
                 <>
+                  <Nav.Link className='px-3'>
+                    <i className='fas fa-money-bill text-white mr-1'></i>$
+                    {total}
+                  </Nav.Link>
                   <LinkContainer to='/dashboard'>
                     <Nav.Link className='px-3'>
                       <i className='fas fa-home pr-1'></i>Dashboard

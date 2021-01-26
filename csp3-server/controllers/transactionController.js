@@ -131,11 +131,9 @@ const updateTransaction = asyncHandler(async (req, res) => {
 
     list.transactionName = newName ? newName : list.transactionName
     list.transactionDesc = newDescription
-      ? newDescription
-      : list.transactionDesc
     list.transactionAmount = newAmount
     list.itemType = category.transactionType
-    list.timestamp = newDate ? newDate : new Date()
+    list.timestamp = newDate
     list.userId = req.user.id
 
     category.totalTransactionAmount += Number(newAmount)

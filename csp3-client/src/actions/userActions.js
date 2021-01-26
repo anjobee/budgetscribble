@@ -155,14 +155,15 @@ export const changePassword = (oldPassword, newPassword) => async (
         Authorization: `Bearer ${userInfo.token}`
       }
     }
-    const { data } = await axios.put(
+
+    await axios.put(
       `/api/users/changepassword`,
       { oldPassword, newPassword },
       config
     )
+
     dispatch({
-      type: USER_CHANGE_PASSWORD_SUCCESS,
-      payload: data
+      type: USER_CHANGE_PASSWORD_SUCCESS
     })
   } catch (error) {
     dispatch({

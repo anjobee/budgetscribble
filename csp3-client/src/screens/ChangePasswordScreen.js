@@ -3,7 +3,6 @@ import { Form, Button, Container, Card, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Meta from '../components/Meta'
 import Message from '../components/Message'
-import Loader from '../components/Loader'
 import { changePassword } from '../actions/userActions'
 
 const ChangePasswordScreen = () => {
@@ -15,7 +14,7 @@ const ChangePasswordScreen = () => {
   const dispatch = useDispatch()
 
   const userChangePassword = useSelector((state) => state.userChangePassword)
-  const { loading, success, error } = userChangePassword
+  const { success, error } = userChangePassword
 
   const submitHandler = (e) => {
     e.preventDefault()
@@ -32,7 +31,6 @@ const ChangePasswordScreen = () => {
   return (
     <Container className='mt-5'>
       <Meta title='Change Password | BudgetScribble' />
-      {loading && <Loader />}
       <Row>
         <Col sm={12} md={6} className='mx-auto'>
           <Card>
