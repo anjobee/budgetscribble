@@ -107,7 +107,7 @@ const HomeScreen = ({ history }) => {
   }
 
   const recordData = useMemo(() => {
-    if (loadingTotal) return
+    if (loadingTransactionRecords) return
     let computedRecords = filterQuery(filter)
 
     setTotalItems(computedRecords.length)
@@ -438,31 +438,7 @@ const HomeScreen = ({ history }) => {
                     TRANSACTION HISTORY
                   </Card.Header>
                   <Card.Body>
-                    <Row>
-                      <Col className='d-flex flex-row'>
-                        {' '}
-                        <Form.Group>
-                          {' '}
-                          <Form.Control
-                            type='text'
-                            sm={5}
-                            placeholder='Enter keyword'
-                            value={filter}
-                            onChange={(e) => setFilter(e.target.value)}
-                          ></Form.Control>
-                        </Form.Group>
-                      </Col>
-                      <Col className='d-flex flex-row-reverse'>
-                        {' '}
-                        <Paginate
-                          total={totalItems}
-                          itemsPerPage={itemsPerRecord}
-                          currentPage={currentPage}
-                          onPageChange={(page) => setCurrentPage(page)}
-                        />
-                      </Col>
-                    </Row>
-                    <TransactionRecords data={recordData} />
+                    <TransactionRecords />
                   </Card.Body>
                 </Card>
               </>

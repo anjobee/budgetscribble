@@ -1,14 +1,15 @@
-import React, { useState } from 'react'
-import { Table, Button, Modal, Form, Card } from 'react-bootstrap'
+import React, { useState, useMemo, useEffect } from 'react'
+import { Table, Button, Modal, Form, Card, Row, Col } from 'react-bootstrap'
 import DatePicker from 'react-datepicker'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   updateTransaction,
   deleteTransaction
 } from '../actions/transactionActions'
+import Paginate from './Paginate'
 
-const TransactionRecords = ({ data }) => {
-  //STATES FOR MODAL
+const TransactionRecords = () => {
+  //STATES FOR MODAL)
   const [modalShow, setModalShow] = useState(false)
   const [newName, setNewName] = useState('')
   const [newDesc, setNewDesc] = useState('')
@@ -44,6 +45,60 @@ const TransactionRecords = ({ data }) => {
       dispatch(deleteTransaction(categoryId, transactionId))
     }
   }
+
+  // TRANSACTIONS RECORD/HISTORY-------------------------------------------
+  const transactionRecords = useSelector((state) => state.transactionRecords)
+  const {
+    loading: loadingTransactionRecords,
+    transactions,
+    success: successTransactionRecords,
+    error: errorTransactionRecords
+  } = transactionRecords
+
+  const [filter, setFilter] = useState('')
+
+  //TABLE PAGINATION
+  const [totalItems, setTotalItems] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerRecord = 13
+
+  //TABLE FILTER
+  const filterQuery = (filter) => {
+    return (
+      transactions &&
+      transactions.filter(
+        (x) =>
+          x.categoryName.toUpperCase().indexOf(filter.toUpperCase()) > -1 ||
+          x.transactionList.transactionName
+            .toUpperCase()
+            .indexOf(filter.toUpperCase()) > -1 ||
+          x.transactionList.itemType
+            .toUpperCase()
+            .indexOf(filter.toUpperCase()) > -1 ||
+          x.transactionList.timestamp
+            .slice(0, 10)
+            .indexOf(filter.toUpperCase()) > -1 ||
+          JSON.stringify(x.transactionList.transactionAmount).indexOf(filter) >
+            -1
+      )
+    )
+  }
+
+  const recordData = useMemo(() => {
+    if (loadingTransactionRecords) return
+    let computedRecords = filterQuery(filter)
+
+    setTotalItems(computedRecords.length)
+
+    return computedRecords.slice(
+      (currentPage - 1) * itemsPerRecord,
+      (currentPage - 1) * itemsPerRecord + itemsPerRecord
+    )
+  }, [filter, currentPage, successTransactionRecords])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filter])
 
   return (
     <>
@@ -112,83 +167,109 @@ const TransactionRecords = ({ data }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      {data && (
-        <Table striped hover responsive>
-          <thead>
-            <tr className='table-dark'>
-              <th scope='col'>DATE</th>
-              <th scope='col'>CATEGORY</th>
-              <th scope='col'>TYPE</th>
-              <th scope='col'>TRANSACTION NAME</th>
-              <th scope='col'>TOTAL AMOUNT</th>
-              <th scope='col'>ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((transaction, index) => (
-              <tr
-                key={index + 1}
-                className={
-                  transaction.transactionList.itemType === 'income'
-                    ? 'table-success'
-                    : 'table-danger'
-                }
-              >
-                <td>{transaction.transactionList.timestamp.slice(0, 10)}</td>
-                <td>{transaction.categoryName}</td>
-                <td>{transaction.transactionList.itemType.toUpperCase()}</td>
-                <td>{transaction.transactionList.transactionName}</td>
-                <td>
-                  {transaction.transactionList.itemType === 'expenses'
-                    ? `-₱${transaction.transactionList.transactionAmount.toLocaleString()}`
-                    : `₱${transaction.transactionList.transactionAmount.toLocaleString()}`}
-                </td>
-                <td>
-                  {' '}
-                  <Button
-                    variant='light'
-                    className='btn-sm'
-                    onClick={() => {
-                      handleShow()
-                      setEditCategoryId(transaction._id)
-                      setEditTransactionId(transaction.transactionList._id)
-                      setEditName(
-                        `Item #${index + 1} - ${
-                          transaction.transactionList.transactionName
-                        } - ${transaction.transactionList.itemType.toUpperCase()}`
-                      )
-                      setNewName(transaction.transactionList.transactionName)
-                      setNewAmount(
-                        transaction.transactionList.transactionAmount
-                      )
-                      setNewDate(
-                        new Date(
-                          transaction.transactionList.timestamp.slice(0, 10)
-                        )
-                      )
-                    }}
-                    key={`button-${index}`}
-                  >
-                    <i className='fas fa-edit'></i>
-                  </Button>
-                  <Button
-                    variant='danger'
-                    className='btn-sm'
-                    onClick={() =>
-                      deleteHandler(
-                        transaction._id,
-                        transaction.transactionList._id
-                      )
-                    }
-                    key={`button-${index + 1}`}
-                  >
-                    <i className='fas fa-trash'></i>
-                  </Button>
-                </td>
+      {recordData && (
+        <>
+          <Row>
+            <Col className='d-flex flex-row'>
+              {' '}
+              <Form.Group>
+                {' '}
+                <Form.Control
+                  type='text'
+                  sm={5}
+                  placeholder='Enter keyword'
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+            </Col>
+            <Col className='d-flex flex-row-reverse'>
+              {' '}
+              <Paginate
+                total={totalItems}
+                itemsPerPage={itemsPerRecord}
+                currentPage={currentPage}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
+            </Col>
+          </Row>
+          <Table striped hover responsive>
+            <thead>
+              <tr className='table-dark'>
+                <th scope='col'>DATE</th>
+                <th scope='col'>CATEGORY</th>
+                <th scope='col'>TYPE</th>
+                <th scope='col'>TRANSACTION NAME</th>
+                <th scope='col'>TOTAL AMOUNT</th>
+                <th scope='col'>ACTIONS</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {recordData.map((transaction, index) => (
+                <tr
+                  key={index + 1}
+                  className={
+                    transaction.transactionList.itemType === 'income'
+                      ? 'table-success'
+                      : 'table-danger'
+                  }
+                >
+                  <td>{transaction.transactionList.timestamp.slice(0, 10)}</td>
+                  <td>{transaction.categoryName}</td>
+                  <td>{transaction.transactionList.itemType.toUpperCase()}</td>
+                  <td>{transaction.transactionList.transactionName}</td>
+                  <td>
+                    {transaction.transactionList.itemType === 'expenses'
+                      ? `-₱${transaction.transactionList.transactionAmount.toLocaleString()}`
+                      : `₱${transaction.transactionList.transactionAmount.toLocaleString()}`}
+                  </td>
+                  <td>
+                    {' '}
+                    <Button
+                      variant='light'
+                      className='btn-sm'
+                      onClick={() => {
+                        handleShow()
+                        setEditCategoryId(transaction._id)
+                        setEditTransactionId(transaction.transactionList._id)
+                        setEditName(
+                          `Item #${index + 1} - ${
+                            transaction.transactionList.transactionName
+                          } - ${transaction.transactionList.itemType.toUpperCase()}`
+                        )
+                        setNewName(transaction.transactionList.transactionName)
+                        setNewAmount(
+                          transaction.transactionList.transactionAmount
+                        )
+                        setNewDate(
+                          new Date(
+                            transaction.transactionList.timestamp.slice(0, 10)
+                          )
+                        )
+                      }}
+                      key={`button-${index}`}
+                    >
+                      <i className='fas fa-edit'></i>
+                    </Button>
+                    <Button
+                      variant='danger'
+                      className='btn-sm'
+                      onClick={() =>
+                        deleteHandler(
+                          transaction._id,
+                          transaction.transactionList._id
+                        )
+                      }
+                      key={`button-${index + 1}`}
+                    >
+                      <i className='fas fa-trash'></i>
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
       )}
     </>
   )
