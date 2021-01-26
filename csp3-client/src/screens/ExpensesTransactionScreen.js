@@ -82,8 +82,6 @@ const ExpensesTransactionScreen = () => {
         {errorDelete && <Message>{errorDelete}</Message>}
         {loading ? (
           <Loader />
-        ) : errorAdd ? (
-          <Message>{errorAdd}</Message>
         ) : (
           <>
             <Row>
@@ -190,6 +188,7 @@ const ExpensesTransactionScreen = () => {
                     </Form>
                   </Card.Body>
                 </Card>
+                {errorAdd && <Message>Please select a category.</Message>}
               </Col>
               <Col sm={12} md={12} lg={6}>
                 <Accordion>

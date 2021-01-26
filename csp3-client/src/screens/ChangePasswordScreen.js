@@ -18,6 +18,17 @@ const ChangePasswordScreen = () => {
 
   const submitHandler = (e) => {
     e.preventDefault()
+
+    if (password.length < 1) {
+      setMessage('Enter old password')
+      return
+    }
+
+    if (newPassword.length < 5) {
+      setMessage('Password needs to be at least 6 characters in length')
+      return
+    }
+
     if (newPassword !== confirmNewPassword) {
       setMessage('New passwords do not match')
     } else {

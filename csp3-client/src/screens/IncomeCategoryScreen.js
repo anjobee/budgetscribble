@@ -167,7 +167,7 @@ const IncomeCategoryScreen = ({ history }) => {
                 </Form>
               </Card.Body>
             </Card>
-            {errorCategory && <Message>{errorCategory}</Message>}
+            {errorCategory && <Message>Please enter category name.</Message>}
           </Col>
           <Col>
             {' '}

@@ -4,7 +4,6 @@ import { Form, Button, Row, Col, Card, Container } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Meta from '../components/Meta'
 import Message from '../components/Message'
-import Loader from '../components/Loader'
 import { register } from '../actions/userActions'
 
 const RegisterScreen = ({ location, history }) => {
@@ -45,8 +44,18 @@ const RegisterScreen = ({ location, history }) => {
   const submitHandler = (e) => {
     e.preventDefault()
 
-    if (password.length < 3) {
-      setMessage('Password needs to be more than 2 characters!')
+    if (password.length < 5) {
+      setMessage('Password needs to be at least 6 characters in length')
+      return
+    }
+
+    if (firstName.length < 1) {
+      setMessage('First name required.')
+      return
+    }
+
+    if (lastName.length < 1) {
+      setMessage('Last name required')
       return
     }
 
