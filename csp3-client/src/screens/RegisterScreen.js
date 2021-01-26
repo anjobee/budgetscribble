@@ -8,6 +8,20 @@ import Loader from '../components/Loader'
 import { register } from '../actions/userActions'
 
 const RegisterScreen = ({ location, history }) => {
+  //CHECK USER INFO
+  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = userLogin
+
+  const redirect = location.search
+    ? location.search.split('=')[1]
+    : '/dashboard'
+
+  useEffect(() => {
+    if (userInfo) {
+      history.push(redirect)
+    }
+  }, [history, userInfo, redirect])
+
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -20,15 +34,13 @@ const RegisterScreen = ({ location, history }) => {
   const formData = { firstName, lastName, email, password }
 
   const userRegister = useSelector((state) => state.userRegister)
-  const { loading, error, userInfo } = userRegister
-
-  const redirect = location.search ? location.search.split('=')[1] : '/'
+  const { success, error } = userRegister
 
   useEffect(() => {
-    if (userInfo) {
-      history.push(redirect)
+    if (success) {
+      history.push('/')
     }
-  }, [history, userInfo, redirect])
+  }, [success])
 
   const submitHandler = (e) => {
     e.preventDefault()
@@ -48,7 +60,6 @@ const RegisterScreen = ({ location, history }) => {
   return (
     <Container className='mt-5'>
       <Meta title='Register | BudgetScribble' />
-      {loading && <Loader />}
       <Row>
         <Col sm={12} md={6} className='mx-auto'>
           <Card>

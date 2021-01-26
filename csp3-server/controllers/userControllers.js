@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler'
 import generateToken from '../utils/generateToken.js'
 import { OAuth2Client } from 'google-auth-library'
 import User from '../models/User.js'
+import { sendEmail } from '../utils/sendEmail.js'
 
 // @desc    Auth google user and login
 // @route   POST /api/users/verify-google-id-token
@@ -120,7 +121,7 @@ const changePassword = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id)
 
   if (user) {
-    if (user.password === oldPassword) {
+    if (user.matchPassword(oldPassword)) {
       user.password = newPassword
     } else {
       res.status(400)
@@ -143,9 +144,10 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email })
 
   if (!user) {
-    return next(new ErrorResponse('There is no user with that email.', 404))
+    return next(new Error('There is no user with that email.', 404))
   }
 
+  //Make a reset token
   const resetToken = user.getResetPasswordToken()
 
   await user.save({ validateBeforeSave: false })
@@ -172,7 +174,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
 
     await user.save({ validateBeforeSave: false })
 
-    return next(new ErrorResponse('Email could not be sent', 500))
+    return next(new Error('Email could not be sent', 500))
   }
   //I COMMENTED THIS RESPONSE BECAUSE IT CAUSES ERROR: ERR_HTTP_HEADERS_SENT
   // res
@@ -208,7 +210,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   user.resetPasswordExpire = undefined
   await user.save()
 
-  sendTokenResponse(user, 200, res)
+  res.status(200).json({ user, res })
 })
 
 //Get Token from model, create cookie and send response
@@ -239,5 +241,6 @@ export {
   authUser,
   registerUser,
   changePassword,
-  forgotPassword
+  forgotPassword,
+  resetPassword
 }

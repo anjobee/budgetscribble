@@ -18,18 +18,21 @@ function App() {
   const userLogin = useSelector((state) => state.userLogin)
   const { loading } = userLogin
 
+  const userRegister = useSelector((state) => state.userRegister)
+  const { loading: loadingRegister } = userRegister
+
   const userGoogleLogin = useSelector((state) => state.userGoogleLogin)
   const { loading: googleLoading } = userGoogleLogin
 
   const userChangePassword = useSelector((state) => state.userChangePassword)
   const { loading: loadingChangePassword } = userChangePassword
+
+  const isLoading =
+    loading || googleLoading || loadingChangePassword || loadingRegister
+
   return (
     <Router>
-      <LoadingOverlay
-        active={loading || googleLoading || loadingChangePassword}
-        spinner
-        text='Loading...'
-      >
+      <LoadingOverlay active={isLoading} spinner text='Loading...'>
         <Container className='py-4 app-container' fluid>
           <Header />
 
