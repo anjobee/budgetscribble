@@ -114,7 +114,7 @@ const LoginScreen = ({ location, history }) => {
                   className='btn btn-block mt-3'
                   onClick={loginJohn}
                 >
-                  Test User Login
+                  Try It Out Now!
                 </Button>
               </OverlayTrigger>
 

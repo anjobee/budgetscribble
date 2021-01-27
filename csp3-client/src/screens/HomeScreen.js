@@ -330,7 +330,6 @@ const HomeScreen = ({ history }) => {
                     <Table striped hover responsive>
                       <thead>
                         <tr className='table-dark'>
-                          <th scope='col'>#</th>
                           <th scope='col'>CATEGORY NAME</th>
                           <th scope='col'>TYPE</th>
                           <th scope='col' className='text-center'>
@@ -351,7 +350,6 @@ const HomeScreen = ({ history }) => {
                                   : 'table-danger'
                               }
                             >
-                              <th scope='row'>{index + 1}</th>
                               <td>{category.categoryName}</td>
                               <td>{category.transactionType.toUpperCase()}</td>
                               <td className='text-center'>
