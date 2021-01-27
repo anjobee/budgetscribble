@@ -68,55 +68,15 @@ const HomeScreen = ({ history }) => {
   const transactionRecords = useSelector((state) => state.transactionRecords)
   const {
     loading: loadingTransactionRecords,
-    transactions,
-    success: successTransactionRecords,
     error: errorTransactionRecords
   } = transactionRecords
 
   const [filter, setFilter] = useState('')
 
-  //TABLE PAGINATION
-  const [totalItems, setTotalItems] = useState(0)
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerRecord = 13
-
+  //CATEGORY TABLE PAGINATION
   const [totalItemsCategory, setTotalItemsCategory] = useState(0)
   const [currentPageCategory, setCurrentPageCategory] = useState(1)
   const itemsPerCategory = 5
-
-  //TABLE FILTER
-  const filterQuery = (filter) => {
-    return (
-      transactions &&
-      transactions.filter(
-        (x) =>
-          x.categoryName.toUpperCase().indexOf(filter.toUpperCase()) > -1 ||
-          x.transactionList.transactionName
-            .toUpperCase()
-            .indexOf(filter.toUpperCase()) > -1 ||
-          x.transactionList.itemType
-            .toUpperCase()
-            .indexOf(filter.toUpperCase()) > -1 ||
-          x.transactionList.timestamp
-            .slice(0, 10)
-            .indexOf(filter.toUpperCase()) > -1 ||
-          JSON.stringify(x.transactionList.transactionAmount).indexOf(filter) >
-            -1
-      )
-    )
-  }
-
-  const recordData = useMemo(() => {
-    if (loadingTransactionRecords) return
-    let computedRecords = filterQuery(filter)
-
-    setTotalItems(computedRecords.length)
-
-    return computedRecords.slice(
-      (currentPage - 1) * itemsPerRecord,
-      (currentPage - 1) * itemsPerRecord + itemsPerRecord
-    )
-  }, [filter, currentPage, successTransactionRecords])
 
   const categoryData = useMemo(() => {
     if (loading) return
@@ -129,10 +89,6 @@ const HomeScreen = ({ history }) => {
       (currentPageCategory - 1) * itemsPerCategory + itemsPerCategory
     )
   }, [currentPageCategory, successCategoryList])
-
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [filter])
 
   //CATEGORY/TRANSASCTIONS ADD/UPDATE/DELETE-------------------------------------------
 

@@ -16,8 +16,18 @@ const ChangePasswordScreen = () => {
   const userChangePassword = useSelector((state) => state.userChangePassword)
   const { success, error } = userChangePassword
 
+  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = userLogin
+
   const submitHandler = (e) => {
     e.preventDefault()
+
+    if (userInfo.email === 'john@example.com') {
+      setMessage(
+        `Can't change John Doe's password! C'mon you're better than that! LOL!`
+      )
+      return
+    }
 
     if (password.length < 1) {
       setMessage('Enter old password')
@@ -47,13 +57,17 @@ const ChangePasswordScreen = () => {
           <Card>
             <Card.Header className='common-card'>Change Password</Card.Header>
             <Card.Body>
-              {success && (
-                <Message variant='success'>
-                  Password changed successfully!
-                </Message>
+              {message ? (
+                <Message>{message}</Message>
+              ) : error ? (
+                <Message>{error}</Message>
+              ) : (
+                success && (
+                  <Message variant='success'>
+                    Password changed successfully!
+                  </Message>
+                )
               )}
-              {message && <Message>{message}</Message>}
-              {error && <Message>{error}</Message>}
               <Form onSubmit={submitHandler}>
                 <Form.Group controlId='oldPassword'>
                   <Form.Label>Old Password</Form.Label>

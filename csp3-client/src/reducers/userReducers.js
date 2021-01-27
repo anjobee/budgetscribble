@@ -11,7 +11,10 @@ import {
   USER_GOOGLE_LOGIN_FAIL,
   USER_REGISTER_REQUEST,
   USER_REGISTER_SUCCESS,
-  USER_REGISTER_FAIL
+  USER_REGISTER_FAIL,
+  USER_TEST_LOGIN_REQUEST,
+  USER_TEST_LOGIN_SUCCESS,
+  USER_TEST_LOGIN_FAIL
 } from '../constants/userConstants'
 
 export const userLoginReducer = (state = {}, action) => {

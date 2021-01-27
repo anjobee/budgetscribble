@@ -12,7 +12,10 @@ import {
   USER_CHANGE_PASSWORD_FAIL,
   USER_GOOGLE_LOGIN_REQUEST,
   USER_GOOGLE_LOGIN_SUCCESS,
-  USER_GOOGLE_LOGIN_FAIL
+  USER_GOOGLE_LOGIN_FAIL,
+  USER_TEST_LOGIN_REQUEST,
+  USER_TEST_LOGIN_SUCCESS,
+  USER_TEST_LOGIN_FAIL
 } from '../constants/userConstants'
 
 export const login = (email, password) => async (dispatch) => {

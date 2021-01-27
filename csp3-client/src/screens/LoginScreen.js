@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import { GoogleLogin } from 'react-google-login'
 import { Link } from 'react-router-dom'
-import { Form, Button, Row, Col, Card, Container } from 'react-bootstrap'
+import {
+  Form,
+  Button,
+  Row,
+  Col,
+  Card,
+  Container,
+  OverlayTrigger,
+  Tooltip
+} from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Meta from '../components/Meta'
 import Message from '../components/Message'
-import Loader from '../components/Loader'
-import { login, googleLogin } from '../actions/userActions'
+import { login, googleLogin, loginJohnDoe } from '../actions/userActions'
+import { userJohnDoeReducer } from '../reducers/userReducers'
 
 const LoginScreen = ({ location, history }) => {
   const [email, setEmail] = useState('')
@@ -39,6 +48,10 @@ const LoginScreen = ({ location, history }) => {
     dispatch(googleLogin(response.tokenId))
   }
 
+  function loginJohn() {
+    dispatch(login('john@example.com', '123456'))
+  }
+
   return (
     <Container className='mt-5'>
       <Meta title='Sign In | BudgetScribble' />
@@ -47,8 +60,11 @@ const LoginScreen = ({ location, history }) => {
           <Card>
             <Card.Header className='common-card'>Sign In</Card.Header>
             <Card.Body>
-              {googleError && <Message variant='danger'>{googleError}</Message>}
-              {error && <Message variant='danger'>{error}</Message>}
+              {googleError ? (
+                <Message variant='danger'>{googleError}</Message>
+              ) : (
+                error && <Message variant='danger'>{error}</Message>
+              )}
               <Form onSubmit={submitHandler}>
                 <Form.Group controlId='email'>
                   <Form.Label>Email Address</Form.Label>
@@ -83,6 +99,24 @@ const LoginScreen = ({ location, history }) => {
                   className='w-100 d-flex justify-content-center mt-3'
                 />
               </Form>
+
+              <OverlayTrigger
+                key='left'
+                placement='left'
+                overlay={
+                  <Tooltip id={`tooltip-'left'`}>
+                    Login as a data ready test user <strong>'John Doe'</strong>.
+                  </Tooltip>
+                }
+              >
+                <Button
+                  variant='secondary'
+                  className='btn btn-block mt-3'
+                  onClick={loginJohn}
+                >
+                  Test User Login
+                </Button>
+              </OverlayTrigger>
 
               <Row className='py-3'>
                 <Col>
