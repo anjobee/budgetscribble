@@ -181,8 +181,8 @@ const HomeScreen = ({ history }) => {
             </p>
             <hr className='my-4' />
             <p>
-              Welcome to budget-tracker-app! Record your daily transactions with
-              ease!
+              Welcome to BudgetScribble! Record and track your daily
+              transactions with ease!
             </p>
             <p className='lead'>
               <Link
@@ -190,7 +190,7 @@ const HomeScreen = ({ history }) => {
                 to='/categories/income'
                 role='button'
               >
-                Start Now!
+                Get Started
               </Link>
             </p>
           </div>
