@@ -7,7 +7,7 @@ const Footer = () => {
       <Container>
         <Row>
           <Col className='text-center py-3'>
-            Copyright &copy; BudgetScribble | Favicon by:{' '}
+            &copy; 2020 BudgetScribble | All Rights Reserved | Favicon by:{' '}
             <a
               href='https://www.vecteezy.com/members/goff-brian'
               target='_blank'
