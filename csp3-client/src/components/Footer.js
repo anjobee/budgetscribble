@@ -14,7 +14,12 @@ const Footer = () => {
               rel='noreferrer'
             >
               goff.brian
-            </a>
+            </a>{' '}
+            | Theme by:{' '}
+            <a href='https://bootswatch.com/' target='_blank' rel='noreferrer'>
+              Thomas Park
+            </a>{' '}
+            {/* | Is It Cool? Contact Me! */}
           </Col>
         </Row>
       </Container>
