@@ -44,8 +44,8 @@ const RegisterScreen = ({ location, history }) => {
   const submitHandler = (e) => {
     e.preventDefault()
 
-    if (password.length < 5) {
-      setMessage('Password needs to be at least 6 characters in length')
+    if (password.length < 6) {
+      setMessage('Password needs to be at least 6 characters in length.')
       return
     }
 
@@ -55,12 +55,12 @@ const RegisterScreen = ({ location, history }) => {
     }
 
     if (lastName.length < 1) {
-      setMessage('Last name required')
+      setMessage('Last name required.')
       return
     }
 
     if (password !== confirmPassword) {
-      setMessage('Passwords do not match')
+      setMessage('Passwords do not match.')
     } else {
       dispatch(register(formData))
     }

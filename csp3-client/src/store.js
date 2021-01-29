@@ -5,7 +5,9 @@ import {
   userRegisterReducer,
   userLoginReducer,
   userGoogleLoginReducer,
-  userChangePasswordReducer
+  userChangePasswordReducer,
+  userForgotPasswordReducer,
+  userResetPasswordReducer
 } from './reducers/userReducers'
 import {
   categoryAddIncomeReducer,
@@ -32,6 +34,8 @@ const reducer = combineReducers({
   userLogin: userLoginReducer,
   userGoogleLogin: userGoogleLoginReducer,
   userChangePassword: userChangePasswordReducer,
+  userForgotPassword: userForgotPasswordReducer,
+  userResetPassword: userResetPasswordReducer,
   categoryList: categoryListReducer,
   categoryListTotal: categoryListTotalReducer,
   categoryIncomeList: categoryIncomeListReducer,

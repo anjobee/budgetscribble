@@ -14,8 +14,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import Meta from '../components/Meta'
 import Message from '../components/Message'
-import { login, googleLogin, loginJohnDoe } from '../actions/userActions'
-import { userJohnDoeReducer } from '../reducers/userReducers'
+import { login, googleLogin } from '../actions/userActions'
 
 const LoginScreen = ({ location, history }) => {
   const [email, setEmail] = useState('')
@@ -118,9 +117,12 @@ const LoginScreen = ({ location, history }) => {
                 </Button>
               </OverlayTrigger>
 
-              <Row className='py-3'>
-                <Col>
+              <Row className='pt-3'>
+                <Col sm={12}>
                   New Here? <Link to='/register'>Register</Link>
+                </Col>
+                <Col sm={12}>
+                  <Link to='/forgotpassword'>Forgot Password? </Link>
                 </Col>
               </Row>
             </Card.Body>

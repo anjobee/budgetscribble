@@ -15,6 +15,6 @@ router.post('/login', authUser)
 router.put('/changepassword', protect, changePassword)
 router.post('/verify-google-id-token', authGoogleUser)
 router.post('/forgotpassword', forgotPassword)
-router.put('/resetpassword/:resettoken', resetPassword)
+router.put('/resetpassword', resetPassword)
 
 export default router

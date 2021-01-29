@@ -12,8 +12,7 @@ const sendEmail = asyncHandler(async (options) => {
       user: process.env.SMTP_EMAIL,
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      refreshToken: process.env.GOOGLE_CLIENT_REFRESH_TOKEN,
-      accessToken: params.googleToken
+      refreshToken: process.env.GOOGLE_CLIENT_REFRESH_TOKEN
     }
   })
 

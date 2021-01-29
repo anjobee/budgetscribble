@@ -12,6 +12,8 @@ import IncomeCategoryScreen from './screens/IncomeCategoryScreen'
 import ExpensesCategoryScreen from './screens/ExpensesCategoryScreen'
 import IncomeTransactionScreen from './screens/IncomeTransactionScreen'
 import ExpensesTransactionScreen from './screens/ExpensesTransactionScreen'
+import ForgotPasswordScreen from './screens/ForgotPasswordScreen'
+import ResetPasswordScreen from './screens/ResetPasswordScreen'
 import LoadingOverlay from 'react-loading-overlay'
 
 function App() {
@@ -22,13 +24,20 @@ function App() {
   const { loading: loadingRegister } = userRegister
 
   const userGoogleLogin = useSelector((state) => state.userGoogleLogin)
-  const { loading: googleLoading } = userGoogleLogin
+  const { loading: loadingGoogle } = userGoogleLogin
 
   const userChangePassword = useSelector((state) => state.userChangePassword)
   const { loading: loadingChangePassword } = userChangePassword
 
+  const userForgotPassword = useSelector((state) => state.userForgotPassword)
+  const { loading: loadingForgotPassword } = userForgotPassword
+
   const isLoading =
-    loading || googleLoading || loadingChangePassword || loadingRegister
+    loading ||
+    loadingGoogle ||
+    loadingChangePassword ||
+    loadingRegister ||
+    loadingForgotPassword
 
   return (
     <Router>
@@ -40,6 +49,8 @@ function App() {
           <Route path='/dashboard' component={HomeScreen} />
           <Route path='/register' component={RegisterScreen} />
           <Route path='/changepassword' component={ChangePasswordScreen} />
+          <Route path='/forgotpassword' component={ForgotPasswordScreen} />
+          <Route path='/resetpassword' component={ResetPasswordScreen} />
           <Route
             path='/categories/income'
             component={IncomeCategoryScreen}

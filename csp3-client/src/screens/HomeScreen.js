@@ -23,6 +23,7 @@ import PieChart from '../components/PieChart'
 import LineChart from '../components/LineChart'
 
 const HomeScreen = ({ history }) => {
+  // GET USER INFO AND CHECK IF USER IS LOGGED IN-------------------------
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
 
@@ -30,7 +31,7 @@ const HomeScreen = ({ history }) => {
     history.push('/login')
   }
 
-  //STATES FOR ADD TRANSACTION CARD
+  // USE STATES FOR ADD TRANSACTION FORM-----------------------------------
   const [categoryName, setCategoryName] = useState('')
   const [transactionName, setTransactionName] = useState('')
   const [transactionDescription, setTransactionDescription] = useState('')
@@ -38,6 +39,7 @@ const HomeScreen = ({ history }) => {
   const [date, setDate] = useState(new Date())
 
   // TRANSACTIONS QUERY SECTION-------------------------------------------
+  //DATA FOR CATEGORY LIST CARD
   const categoryList = useSelector((state) => state.categoryList)
   const {
     loading,
@@ -47,6 +49,7 @@ const HomeScreen = ({ history }) => {
     error
   } = categoryList
 
+  //DATA FOR CATEGORIES LIST PIE CHART
   const categoryListTotal = useSelector((state) => state.categoryListTotal)
   const {
     loading: loadingTotal,
@@ -54,6 +57,7 @@ const HomeScreen = ({ history }) => {
     error: errorTotal
   } = categoryListTotal
 
+  //DATA FOR TRANSACTION TRENDS LINE CHART
   const transactionTrendList = useSelector(
     (state) => state.transactionTrendList
   )
@@ -64,16 +68,14 @@ const HomeScreen = ({ history }) => {
     error: errorTransactionTrend
   } = transactionTrendList
 
-  // TRANSACTIONS RECORD/HISTORY-------------------------------------------
+  // TRANSACTIONS RECORD/HISTORY REDUCER FOR LOADING AND ERROR CHECKS ONLY---------
   const transactionRecords = useSelector((state) => state.transactionRecords)
   const {
     loading: loadingTransactionRecords,
     error: errorTransactionRecords
   } = transactionRecords
 
-  const [filter, setFilter] = useState('')
-
-  //CATEGORY TABLE PAGINATION
+  //CATEGORY TABLE PAGINATION--------------------------------------------------------
   const [totalItemsCategory, setTotalItemsCategory] = useState(0)
   const [currentPageCategory, setCurrentPageCategory] = useState(1)
   const itemsPerCategory = 5
@@ -90,8 +92,7 @@ const HomeScreen = ({ history }) => {
     )
   }, [currentPageCategory, successCategoryList])
 
-  //CATEGORY/TRANSASCTIONS ADD/UPDATE/DELETE-------------------------------------------
-
+  // CATEGORY/TRANSASCTIONS ADD/UPDATE/DELETE SUCCESS FLAGS---------------------------
   const categoryDelete = useSelector((state) => state.categoryDelete)
   const { success: successCategoryDelete } = categoryDelete
 
@@ -104,7 +105,7 @@ const HomeScreen = ({ history }) => {
   const transactionDelete = useSelector((state) => state.transactionDelete)
   const { success: successDelete } = transactionDelete
 
-  //REDUX - QUERY DATA UPON RELOAD-------------------------------------------
+  // REDUX - QUERY DATA UPON ACTION SUCCESS-------------------------------------------
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -114,8 +115,9 @@ const HomeScreen = ({ history }) => {
     dispatch(getTransactionRecords())
   }, [success, successAdd, successDelete, successCategoryDelete, dispatch])
 
-  //SUBMIT HANDLERS EDIT/ADD/DELETE-------------------------------------------
+  // SUBMIT HANDLERS ADD/DELETE-------------------------------------------------------
 
+  //ADD TRANSACTION CARD
   const submitTransactionHandler = () => {
     dispatch(
       addTransaction(
@@ -131,13 +133,14 @@ const HomeScreen = ({ history }) => {
     setTransactionAmount(0)
   }
 
+  //DELETE CATEGORY FROM CATEGORIES LIST ACTION
   const deleteHandler = (categoryId) => {
     if (window.confirm('Are you sure?')) {
       dispatch(deleteCategory(categoryId))
     }
   }
 
-  //CHART DATA INITIALIZATION-------------------------------------------
+  // CHART DATA INITIALIZATION----------------------------------------------------------
 
   //CATEGORY PIE DATA
   let categoryPieData
@@ -150,7 +153,7 @@ const HomeScreen = ({ history }) => {
     categoryPieNames = categoriesTotal.map((category) => category.categoryName)
   }
 
-  //INCOME % VS EXPENSES % PIE CHART-------------------------------------------
+  //INCOME % VS EXPENSES % PIE CHART
   let totalIncome = 0
   let totalExpenses = 0
 
@@ -164,7 +167,7 @@ const HomeScreen = ({ history }) => {
     expenses.forEach((x) => (totalExpenses += x.totalTransactionAmount))
   }
 
-  //LINE CHART RANGE
+  //LINE CHART RANGE FOR CHART DYNAMICS
   const [startRange, setStartRange] = useState(1)
   const [endRange, setEndRange] = useState(12)
 
@@ -321,6 +324,7 @@ const HomeScreen = ({ history }) => {
                     CATEGORY LIST
                   </Card.Header>
                   <Card.Body>
+                    {' '}
                     <Paginate
                       total={totalItemsCategory}
                       itemsPerPage={itemsPerCategory}

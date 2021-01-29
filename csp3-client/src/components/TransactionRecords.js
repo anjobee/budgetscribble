@@ -7,6 +7,7 @@ import {
   deleteTransaction
 } from '../actions/transactionActions'
 import Paginate from './Paginate'
+import Message from './Message'
 
 const TransactionRecords = () => {
   //STATES FOR MODAL)
@@ -167,6 +168,7 @@ const TransactionRecords = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      {errorTransactionRecords && <Message>{errorTransactionRecords}</Message>}
       {recordData && (
         <>
           <Row>

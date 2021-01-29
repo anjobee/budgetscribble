@@ -2,30 +2,34 @@ import React from 'react'
 import { Line } from 'react-chartjs-2'
 
 const LineChart = ({ incomeTrend, expensesTrend, startRange, endRange }) => {
-  const expensesRearrange = [...Array(12)].map((m, i) => {
+  const expensesRearranged = [...Array(12)].map((m, i) => {
     return (
-      expensesTrend.find((d) => d._id.month === i + 1) || {
+      expensesTrend.find(
+        (expenseObject) => expenseObject._id.month === i + 1
+      ) || {
         total: 0,
         _id: { month: i }
       }
     )
   })
 
-  const incomeRearrange = [...Array(12)].map((m, i) => {
+  const incomeRearranged = [...Array(12)].map((m, i) => {
     return (
-      incomeTrend.find((d) => d._id.month === i + 1) || {
+      incomeTrend.find((incomeObject) => incomeObject._id.month === i + 1) || {
         total: 0,
         _id: { month: i }
       }
     )
   })
 
-  const expensesArray = expensesRearrange
-    .map((x) => x.total)
+  //MAKE A NEW ARRAY OF ONLY EXPENSES.TOTAL OBJECT KEY - 'total: 5000'
+  const expensesArray = expensesRearranged
+    .map((expenseObject) => expenseObject.total)
     .slice(startRange - 1, endRange)
 
-  const incomeArray = incomeRearrange
-    .map((x) => x.total)
+  //MAKE A NEW ARRAY OF ONLY INCOME.TOTAL OBJECT KEY - 'total: 5000'
+  const incomeArray = incomeRearranged
+    .map((incomeObject) => incomeObject.total)
     .slice(startRange - 1, endRange)
 
   const labels = [

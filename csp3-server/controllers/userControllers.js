@@ -3,6 +3,8 @@ import generateToken from '../utils/generateToken.js'
 import { OAuth2Client } from 'google-auth-library'
 import User from '../models/User.js'
 import { sendEmail } from '../utils/sendEmail.js'
+import generatePassword from 'password-generator'
+import crypto from 'crypto'
 
 // @desc    Auth google user and login
 // @route   POST /api/users/verify-google-id-token
@@ -140,11 +142,15 @@ const changePassword = asyncHandler(async (req, res) => {
 //@desc     Forgot password
 //@route    POST /api/users/forgotpassword
 //@access   Public
-const forgotPassword = asyncHandler(async (req, res, next) => {
+const forgotPassword = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.body.email })
 
   if (!user) {
     return next(new Error('There is no user with that email.', 404))
+  }
+
+  if (user.loginType === 'google') {
+    throw new Error('Login type is google, please use google login.')
   }
 
   //Make a reset token
@@ -154,9 +160,9 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
 
   const resetUrl = `${req.protocol}://${req.get(
     'host'
-  )}/api/users/resetpassword/${resetToken}`
+  )}/api/users/resetpassword`
 
-  const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a reset password request to: \n\n ${resetUrl}`
+  const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a reset password request to: \n\n ${resetUrl}\n\n Reset Token: ${resetToken}`
 
   try {
     await sendEmail({
@@ -165,34 +171,28 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
       message
     })
 
-    res.status(200).json({ success: true, data: 'Email sent.' })
-    next()
+    res.status(200).json('Email sent.')
   } catch (err) {
-    console.log(err)
+    console.error(err)
     user.getResetPasswordToken = undefined
     user.getResetPasswordExpire = undefined
 
     await user.save({ validateBeforeSave: false })
 
-    return next(new Error('Email could not be sent', 500))
+    throw new Error('Email could not be sent', 500)
   }
-  //I COMMENTED THIS RESPONSE BECAUSE IT CAUSES ERROR: ERR_HTTP_HEADERS_SENT
-  // res
-  // .status(200)
-  // .json({
-  //     success: true,
-  //     data: user
-  // });
 })
 
 //@desc     Reset password
-//@route    PUT /api/users/resetpassword/:resettoken
+//@route    PUT /api/users/resetpassword/
 //@access   Public
-const resetPassword = asyncHandler(async (req, res, next) => {
+const resetPassword = asyncHandler(async (req, res) => {
+  const { resetToken, newPassword } = req.body
+
   //Get hashed token
   const resetPasswordToken = crypto
     .createHash('sha256')
-    .update(req.params.resettoken)
+    .update(resetToken)
     .digest('hex')
 
   const user = await User.findOne({
@@ -201,40 +201,17 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   })
 
   if (!user) {
-    return next(new ErrorResponse('Invalid token.', 400))
+    throw new Error('Please enter valid token.', 400)
   }
 
   //Set new password
-  user.password = req.body.password
+  user.password = newPassword
   user.resetPasswordToken = undefined
   user.resetPasswordExpire = undefined
   await user.save()
 
-  res.status(200).json({ user, res })
+  res.status(200).json('Password has been updated.')
 })
-
-//Get Token from model, create cookie and send response
-const sendTokenResponse = (user, statusCode, res) => {
-  //Create Token
-  const token = user.getSignedJwtToken()
-
-  const options = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true
-  }
-
-  //ADD A SECURE FLAG TO THE COOKIE WHEN IN PRODUCTION ENVIRONMENT
-  if (process.env.NODE_ENV === 'production') {
-    options.secure = true
-  }
-
-  res
-    .status(statusCode)
-    .cookie('token', token, options)
-    .json({ success: true, token })
-}
 
 export {
   authGoogleUser,
