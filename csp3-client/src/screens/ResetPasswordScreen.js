@@ -24,11 +24,11 @@ const ResetPasswordScreen = ({ history }) => {
         icon: 'success',
         title: message,
         showConfirmButton: false,
-        timer: 3000
+        timer: 1800
       })
       setTimeout(() => {
         history.push('/')
-      }, 3000)
+      }, 1800)
     }
   }, [success])
 

@@ -3,7 +3,6 @@ import generateToken from '../utils/generateToken.js'
 import { OAuth2Client } from 'google-auth-library'
 import User from '../models/User.js'
 import { sendEmail } from '../utils/sendEmail.js'
-import generatePassword from 'password-generator'
 import crypto from 'crypto'
 
 // @desc    Auth google user and login
@@ -156,13 +155,16 @@ const forgotPassword = asyncHandler(async (req, res) => {
   //Make a reset token
   const resetToken = user.getResetPasswordToken()
 
+  const expiration = new Date(resetToken.resetPasswordExpires)
+
   await user.save({ validateBeforeSave: false })
 
-  const resetUrl = `${req.protocol}://${req.get(
-    'host'
-  )}/api/users/resetpassword`
+  const resetUrl = `${req.protocol}://${req.get('host')}/resetpassword`
 
-  const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a reset password request to: \n\n ${resetUrl}\n\n Reset Token: ${resetToken}`
+  const message = `You are receiving this email because you (or someone else) has requested the reset of a password that will expire in 30 minutes. 
+  <br/><br/> Please make a reset password request to: ${resetUrl} 
+  <br/><br/><strong style="font-size: 15px;">Reset Token: ${resetToken.resetToken}</strong> 
+  <br/><br/>Expires In: ${expiration}`
 
   try {
     await sendEmail({

@@ -63,9 +63,13 @@ userSchema.methods.getResetPasswordToken = function () {
     .digest('hex')
 
   //Set expire
-  this.resetPasswordExpire = Date.now() + 20 * 60 * 1000
+  const dateNow = new Date()
+  // this.resetPasswordExpire = Date.now() + 10 * 60 * 1000
+  const resetPasswordExpires = (this.resetPasswordExpire = dateNow.setMinutes(
+    dateNow.getMinutes() + 30
+  ))
 
-  return resetToken
+  return { resetToken, resetPasswordExpires }
 }
 
 const User = mongoose.model('User', userSchema)
