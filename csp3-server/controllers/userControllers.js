@@ -159,7 +159,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
   await user.save({ validateBeforeSave: false })
 
-  const resetUrl = `${req.protocol}://${req.get('host')}/resetpassword`
+  const resetUrl = `https://${req.get('host')}/resetpassword`
 
   const message = `You are receiving this email because you (or someone else) has requested the reset of a password that will expire in 30 minutes. 
   <br/><br/> Please make a reset password request to: ${resetUrl} 
